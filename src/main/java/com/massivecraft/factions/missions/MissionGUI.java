@@ -49,7 +49,7 @@ public class MissionGUI implements FactionGUI {
                 if (!keys.toArray()[pick].toString().equals("FillItem")) {
                     missionName = keys.toArray()[pick].toString();
                     if (!fPlayer.getFaction().getMissions().containsKey(missionName)) {
-                        pickedMission = new Mission(missionName, plugin.getFileManager().getMissions().getConfig().getString("Missions." + missionName + ".Mission.Type"));
+                        pickedMission = new Mission(missionName, MissionType.fromName(plugin.getFileManager().getMissions().getConfig().getString("Missions." + missionName + ".Mission.Type")));
                         fPlayer.getFaction().getMissions().put(missionName, pickedMission);
                         fPlayer.msg(TL.MISSION_MISSION_STARTED, fPlayer.describeTo(fPlayer.getFaction()), CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Missions." + missionName + ".Name")));
                         build();
@@ -98,7 +98,7 @@ public class MissionGUI implements FactionGUI {
         ConfigurationSection missionSection = section.getConfigurationSection("Mission");
         if (missionSection == null) return;
 
-        Mission mission = new Mission(missionName, missionSection.getString("Type"));
+        Mission mission = new Mission(missionName, MissionType.fromName(missionSection.getString("Type")));
 
         fPlayer.getFaction().getMissions().put(missionName, mission);
         fPlayer.msg(TL.MISSION_MISSION_STARTED, fPlayer.describeTo(fPlayer.getFaction()), CC.translate(section.getString("Name")));

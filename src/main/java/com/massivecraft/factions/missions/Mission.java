@@ -8,9 +8,9 @@ public class Mission {
 
     private long progress;
     private String name;
-    private String type;
+    private MissionType type;
 
-    public Mission(String name, String type) {
+    public Mission(String name, MissionType type) {
         this.name = name;
         this.type = type;
     }
@@ -27,7 +27,7 @@ public class Mission {
         return name;
     }
 
-    public String getType() {
+    public MissionType getType() {
         return type;
     }
 }

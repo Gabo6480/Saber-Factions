@@ -174,7 +174,7 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.10.7</version>
+            <version>0.5.8</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -308,7 +308,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>LATEST</version>
+            <version>4.2.0_197</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
