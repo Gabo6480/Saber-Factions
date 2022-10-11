@@ -8,7 +8,8 @@ public enum MissionType {
     FISH,
     TAME,
     ENCHANT,
-    CONSUME;
+    CONSUME,
+    BREED;
 
 
 
