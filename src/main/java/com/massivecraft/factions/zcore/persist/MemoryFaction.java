@@ -519,16 +519,14 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
 
     private int getChestSize() {
         int size = FactionsPlugin.getInstance().getConfig().getInt("fchest.Default-Size");
-        switch (getUpgrade(UpgradeType.CHEST)) {
-            case 1:
-                size = FactionsPlugin.getInstance().getFileManager().getUpgrades().getConfig().getInt("fupgrades.MainMenu.Chest.Chest-Size.level-1") * 9;
-                break;
-            case 2:
-                size = FactionsPlugin.getInstance().getFileManager().getUpgrades().getConfig().getInt("fupgrades.MainMenu.Chest.Chest-Size.level-2") * 9;
-                break;
-            case 3:
-                size = FactionsPlugin.getInstance().getFileManager().getUpgrades().getConfig().getInt("fupgrades.MainMenu.Chest.Chest-Size.level-3") * 9;
-                break;
+
+        int chestUpgrade = getUpgrade(UpgradeType.CHEST);
+        if (chestUpgrade > 0) {
+            int upgradedSize = FactionsPlugin.getInstance().getFileManager().getUpgrades().getConfig().getInt("fupgrades.MainMenu.Chest.Chest-Size.level-" + chestUpgrade, -1);
+            if(upgradedSize > -1) {
+                size = upgradedSize;
+                //TODO: Add error message stating that the upgrade level leads to an empty value
+            }
         }
         return size * 9;
     }
