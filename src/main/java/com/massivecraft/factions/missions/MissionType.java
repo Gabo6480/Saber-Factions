@@ -9,7 +9,9 @@ public enum MissionType {
     TAME,
     ENCHANT,
     CONSUME,
-    BREED;
+    BREED,
+    TRIBUTE
+    ;
 
 
 

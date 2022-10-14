@@ -1200,6 +1200,7 @@ public enum TL {
     MISSION_MISSION_FINISHED("&c&l[!] &7Your faction has successfully completed %1$s mission!"),
     COMMAND_MISSION_DESCRIPTION("Opens missions gui"),
     MISSION_MISSION_CANCELLED("&c&l[!] &7You have cancelled your factions current mission!"),
+    MISSION_TRIBUTE_ITEM_DENIED_TRANSFER("&c&l[!] &7There are no tribute missions that accept &b%1$s&7."),
     // F Global \\
 
 

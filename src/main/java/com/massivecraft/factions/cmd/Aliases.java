@@ -33,6 +33,9 @@ public class Aliases {
     public static ArrayList<String> unclaim_unclaim = new ArrayList<>(Arrays.asList("unclaim", "declaim"));
     public static ArrayList<String> unclaim_all_unsafe = new ArrayList<>(Arrays.asList("unclaimall", "declaimall"));
     public static ArrayList<String> unclaim_all_war = new ArrayList<>(Arrays.asList("warunclaimall", "wardeclaimall"));
+
+    public static ArrayList<String> missions_missions = new ArrayList<>(Arrays.asList("missions", "mission", "objectives", "objective"));
+
     public static ArrayList<String> money_money = new ArrayList<>(Arrays.asList("money", "bank"));
     public static ArrayList<String> money_balance = new ArrayList<>(Arrays.asList("b", "balance"));
     public static ArrayList<String> money_deposit = new ArrayList<>(Arrays.asList("d", "deposit"));
@@ -40,6 +43,7 @@ public class Aliases {
     public static ArrayList<String> money_transfer_Fp = new ArrayList<>(Collections.singletonList("fp"));
     public static ArrayList<String> money_transfer_Pf = new ArrayList<>(Collections.singletonList("pf"));
     public static ArrayList<String> money_withdraw = new ArrayList<>(Arrays.asList("w", "withdraw"));
+
     public static ArrayList<String> grace = new ArrayList<>(Collections.singletonList("grace"));
     public static ArrayList<String> logout = new ArrayList<>(Collections.singletonList("logout"));
     public static ArrayList<String> points_balance = new ArrayList<>(Arrays.asList("balance", "bal"));

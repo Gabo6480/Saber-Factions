@@ -27,6 +27,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MissionHandler implements Listener {
 
@@ -34,12 +35,12 @@ public class MissionHandler implements Listener {
      * @author Driftay
      */
 
-    static final String matchAnythingRegex = ".*";
+    public static final String matchAnythingRegex = ".*";
 
-    private final FactionsPlugin plugin;
+    private static FactionsPlugin plugin;
 
     public MissionHandler(FactionsPlugin plugin) {
-        this.plugin = plugin;
+        MissionHandler.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -54,7 +55,7 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.BREED, (mission, section) -> {
             String entity = section.getString("Mission.Entity", matchAnythingRegex);
-            return e.getEntityType().toString().matches(entity);
+            return e.getEntityType().toString().matches(entity) ? 1 : -1;
         });
     }
 
@@ -70,7 +71,7 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.TAME, (mission, section) -> {
             String entity = section.getString("Mission.Entity", matchAnythingRegex);
-            return e.getEntityType().toString().matches(entity);
+            return e.getEntityType().toString().matches(entity) ? 1 : -1;
         });
     }
 
@@ -86,7 +87,7 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.KILL, (mission, section) -> {
             String entity = section.getString("Mission.Entity", matchAnythingRegex);
-            return e.getEntityType().toString().matches(entity);
+            return e.getEntityType().toString().matches(entity) ? 1 : -1;
         });
     }
 
@@ -99,7 +100,7 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.MINE, (mission, section) -> {
             String item = section.getString("Mission.Item", matchAnythingRegex);
-            return e.getBlock().getType().toString().matches(item);
+            return e.getBlock().getType().toString().matches(item) ? 1 : -1;
         });
     }
 
@@ -112,7 +113,7 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.PLACE, (mission, section) -> {
             String item = section.getString("Mission.Item", matchAnythingRegex);
-            return e.getBlockPlaced().getType().toString().matches(item);
+            return e.getBlockPlaced().getType().toString().matches(item) ? 1 : -1;
         });
     }
 
@@ -130,9 +131,9 @@ public class MissionHandler implements Listener {
             String item = section.getString("Mission.Item", matchAnythingRegex);
             if(e.getCaught() instanceof Item) {
                 Item caughtItem = (Item) e.getCaught();
-                return caughtItem.getItemStack().getType().toString().matches(item);
+                return caughtItem.getItemStack().getType().toString().matches(item) ? 1 : -1;
             }
-            return false;
+            return -1;
         });
     }
 
@@ -145,7 +146,7 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.ENCHANT, (mission, section) -> {
             String item = section.getString("Mission.Item", matchAnythingRegex);
-            return e.getItem().getType().toString().matches(item);
+            return e.getItem().getType().toString().matches(item) ? 1 : -1;
         });
     }
 
@@ -158,23 +159,27 @@ public class MissionHandler implements Listener {
 
         handleMissionsOfType(fPlayer, MissionType.CONSUME, (mission, section) -> {
             String item = section.getString("Mission.Item", matchAnythingRegex);
-            return e.getItem().getType().toString().matches(item);
+            return e.getItem().getType().toString().matches(item) ? 1 : -1;
         });
     }
 
-    private void handleMissionsOfType(FPlayer fPlayer, MissionType missionType, BiFunction<Mission, ConfigurationSection, Boolean> missionConsumer){
-        fPlayer.getFaction().getMissions().values().stream()
-                .filter(mission -> mission.getType() == missionType)
-                .forEach(mission -> {
+    public static void handleMissionsOfType(FPlayer fPlayer, MissionType missionType, BiFunction<Mission, ConfigurationSection, Integer> missionConsumer){
+        getMissionsOfType(fPlayer, missionType).forEach(mission -> {
                     ConfigurationSection section = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Missions." + mission.getName());
-                    if(missionConsumer.apply(mission, section)){
-                        mission.incrementProgress();
+                    int missionResult = missionConsumer.apply(mission, section);
+                    if(missionResult > 0){
+                        mission.incrementProgress(missionResult);
                         checkIfDone(fPlayer, mission, section);
                     }
                 });
     }
 
-    private void checkIfDone(FPlayer fPlayer, Mission mission, @Nullable ConfigurationSection section) {
+    public static Stream<Mission> getMissionsOfType(FPlayer fPlayer, MissionType missionType){
+        return fPlayer.getFaction().getMissions().values().stream()
+                .filter(mission -> mission.getType() == missionType);
+    }
+
+    private static void checkIfDone(FPlayer fPlayer, Mission mission, @Nullable ConfigurationSection section) {
         if(section == null)
             return;
 
