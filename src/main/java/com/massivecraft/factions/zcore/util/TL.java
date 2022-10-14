@@ -133,6 +133,7 @@ public enum TL {
     COMMAND_UPGRADES_POINTS_TAKEN("&cFaction upgrade purchased for &e%1$s points! &cNew Point Balance: &e%2$s"),
     COMMAND_UPGRADES_NOT_ENOUGH_POINTS("&cYour faction does not have enough points to purchase this upgrade!"),
     COMMAND_UPGRADES_DISABLED("&c[!] &7Faction Upgrades are &cdisabled&7."),
+    COMMAND_UPGRADES_LEVEL_ERROR("&c[!] &7Faction Upgrade &e%1$s &7of level &e%2$s &7led to an invalid value&7."),
 
     COMMAND_CORNER_CANT_CLAIM("&c&l[!] &cYou may not claim this corner!"),
     COMMAND_CORNER_CLAIMED("\n&2&l[!] &aYou have claimed the corner successfully, totalling in &b%1$d &achunks!\n"),

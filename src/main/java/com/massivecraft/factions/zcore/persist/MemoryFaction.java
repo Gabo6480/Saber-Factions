@@ -525,7 +525,9 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
             int upgradedSize = FactionsPlugin.getInstance().getFileManager().getUpgrades().getConfig().getInt("fupgrades.MainMenu.Chest.Chest-Size.level-" + chestUpgrade, -1);
             if(upgradedSize > -1) {
                 size = upgradedSize;
-                //TODO: Add error message stating that the upgrade level leads to an empty value
+            }
+            else{
+                FactionsPlugin.getInstance().getLogger().severe(FactionsPlugin.getInstance().txt.parse(TL.COMMAND_UPGRADES_LEVEL_ERROR.toString(), "CHEST", chestUpgrade));
             }
         }
         return size * 9;
