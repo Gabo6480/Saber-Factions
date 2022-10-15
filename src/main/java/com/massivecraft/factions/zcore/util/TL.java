@@ -1203,6 +1203,7 @@ public enum TL {
     COMMAND_MISSION_DESCRIPTION("Opens missions gui"),
     MISSION_MISSION_CANCELLED("&c&l[!] &7You have cancelled your factions current mission!"),
     MISSION_TRIBUTE_ITEM_DENIED_TRANSFER("&c&l[!] &7There are no tribute missions that accept &b%1$s&7."),
+    MISSION_RANDOM_MODE_DENIED("&c&l[!] &7Please select the %1$s&7 item to have a random mission assigned."),
     // F Global \\
 
 

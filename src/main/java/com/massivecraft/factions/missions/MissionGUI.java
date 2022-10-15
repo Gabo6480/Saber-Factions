@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MissionGUI implements FactionGUI {
 
@@ -39,36 +40,43 @@ public class MissionGUI implements FactionGUI {
     public void onClick(int slot, ClickType action) {
         String missionName = slots.get(slot);
         if (missionName == null) return;
+
         ConfigurationSection configurationSection = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Missions");
-        if (missionName.equals(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Name")))) {
-            Mission pickedMission = null;
-            Set<String> keys = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Missions").getKeys(false);
-            while (pickedMission == null) {
-                Random r = new Random();
-                int pick = r.nextInt(keys.size() - 1);
-                if (!keys.toArray()[pick].toString().equals("FillItem")) {
-                    missionName = keys.toArray()[pick].toString();
-                    if (!fPlayer.getFaction().getMissions().containsKey(missionName)) {
-                        pickedMission = new Mission(missionName, MissionType.fromName(plugin.getFileManager().getMissions().getConfig().getString("Missions." + missionName + ".Mission.Type")), System.currentTimeMillis());
-                        fPlayer.getFaction().getMissions().put(missionName, pickedMission);
-                        fPlayer.msg(TL.MISSION_MISSION_STARTED, fPlayer.describeTo(fPlayer.getFaction()), CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Missions." + missionName + ".Name")));
-                        build();
-                        fPlayer.getPlayer().openInventory(inventory);
-                        return;
-                    }
-                }
-            }
-        } else if (plugin.getFileManager().getMissions().getConfig().getBoolean("Randomization.Enabled")) {
-            return;
-        }
         if (configurationSection == null) return;
 
-        if (plugin.getFileManager().getMissions().getConfig().getBoolean("Allow-Cancellation-Of-Missions") && fPlayer.getFaction().getMissions().containsKey(missionName)) {
-            if (action == ClickType.RIGHT) {
+        if (plugin.getFileManager().getMissions().getConfig().getBoolean("Allow-Cancellation-Of-Missions")
+                && fPlayer.getFaction().getMissions().containsKey(missionName)
+                && action == ClickType.RIGHT) {
                 fPlayer.getFaction().getMissions().remove(missionName);
                 fPlayer.msg(TL.MISSION_MISSION_CANCELLED);
                 build();
                 fPlayer.getPlayer().openInventory(inventory);
+                return;
+
+        }
+
+        if (plugin.getFileManager().getMissions().getConfig().getBoolean("Randomization.Enabled")) {
+
+            if (missionName.equals(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Name")))) {
+                Set<String> keys = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Missions").getKeys(false);
+
+                // Remove un-selectable keys
+                keys.remove("FillItem");
+                fPlayer.getFaction().getMissions().forEach((mName, miss) -> keys.remove(mName));
+                if(plugin.getFileManager().getMissions().getConfig().getBoolean("DenyMissionsMoreThenOnce"))
+                    fPlayer.getFaction().getCompletedMissions().forEach(keys::remove);
+
+                Random r = new Random();
+                int pick = r.nextInt(keys.size());
+                // We override and let the rest of the code handle the rest.
+                missionName = keys.toArray()[pick].toString();
+            }
+            else if (missionName.equals(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Name"))))
+            {
+                return;
+            }
+            else {
+                fPlayer.msg(TL.MISSION_RANDOM_MODE_DENIED, CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Name")));
                 return;
             }
         }
@@ -78,13 +86,12 @@ public class MissionGUI implements FactionGUI {
             fPlayer.msg(TL.MISSION_MISSION_MAX_ALLOWED, max);
             return;
         }
-        if (missionName.equals(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Name"))))
-            return;
 
         if (fPlayer.getFaction().getMissions().containsKey(missionName)) {
             fPlayer.msg(TL.MISSION_MISSION_ACTIVE);
             return;
         }
+
         ConfigurationSection section = configurationSection.getConfigurationSection(missionName);
         if (section == null) return;
 
@@ -169,41 +176,51 @@ public class MissionGUI implements FactionGUI {
         }
 
         if (plugin.getFileManager().getMissions().getConfig().getBoolean("Randomization.Enabled")) {
-            ItemStack start;
-            ItemMeta meta;
-            start = XMaterial.matchXMaterial(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Material")).get().parseItem();
-            meta = start.getItemMeta();
-            meta.setDisplayName(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Name")));
+
+            String material = plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Material");
+            String displayName = plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Allowed.Name");
+
             List<String> loree = new ArrayList<>();
             for (String string : plugin.getFileManager().getMissions().getConfig().getStringList("Randomization.Start-Item.Allowed.Lore")) {
                 loree.add(CC.translate(string));
             }
-            meta.setLore(loree);
-            start.setItemMeta(meta);
-            if (fPlayer.getFaction().getCompletedMissions().size() >= configurationSection.getKeys(false).size() - 1 && plugin.getFileManager().getMissions().getConfig().getBoolean("DenyMissionsMoreThenOnce")) {
-                start = XMaterial.matchXMaterial(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Material")).get().parseItem();
-                meta = start.getItemMeta();
-                meta.setDisplayName(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Name")));
-                List<String> lore = new ArrayList<>();
+
+            // There are no more available missions
+            if (plugin.getFileManager().getMissions().getConfig().getBoolean("DenyMissionsMoreThenOnce") &&
+                    // Check if the completed missions contain all the available missions,
+                    // doing it this way since there might be completed missions that are no longer available
+                    fPlayer.getFaction().getCompletedMissions().containsAll(configurationSection.getKeys(false)
+                            .stream().filter(key -> !key.equals("FillItem")).collect(Collectors.toSet()))) {
+                material = plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Material");
+                displayName = plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Name");
+
+                loree.clear();
                 for (String string : plugin.getFileManager().getMissions().getConfig().getStringList("Randomization.Start-Item.Disallowed.Lore")) {
-                    lore.add(CC.translate(string).replace("%reason%", TL.MISSION_MISSION_ALL_COMPLETED.toString()));
+                    loree.add(CC.translate(string).replace("%reason%", TL.MISSION_MISSION_ALL_COMPLETED.toString()));
                 }
-                meta.setLore(lore);
-                start.setItemMeta(meta);
             }
+
+            // Maximum amount of missions reached
             if (fPlayer.getFaction().getMissions().size() >= plugin.getFileManager().getMissions().getConfig().getInt("MaximumMissionsAllowedAtOnce")) {
-                start = XMaterial.matchXMaterial(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Material")).get().parseItem();
-                meta = start.getItemMeta();
-                meta.setDisplayName(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Name")));
-                List<String> lore = new ArrayList<>();
+                material = plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Material");
+                displayName = plugin.getFileManager().getMissions().getConfig().getString("Randomization.Start-Item.Disallowed.Name");
+
+                loree.clear();
                 for (String string : plugin.getFileManager().getMissions().getConfig().getStringList("Randomization.Start-Item.Disallowed.Lore")) {
-                    lore.add(CC.translate(string).replace("%reason%", FactionsPlugin.getInstance().txt.parse(TL.MISSION_MISSION_MAX_ALLOWED.toString(), plugin.getFileManager().getMissions().getConfig().getInt("MaximumMissionsAllowedAtOnce"))));
+                    loree.add(CC.translate(string).replace("%reason%", FactionsPlugin.getInstance().txt.parse(TL.MISSION_MISSION_MAX_ALLOWED.toString(), plugin.getFileManager().getMissions().getConfig().getInt("MaximumMissionsAllowedAtOnce"))));
                 }
-                meta.setLore(lore);
-                start.setItemMeta(meta);
-            }
-            inventory.setItem(plugin.getFileManager().getMissions().getConfig().getInt("Randomization.Start-Item.Slot"), start);
-            slots.put(plugin.getFileManager().getMissions().getConfig().getInt("Randomization.Start-Item.Slot"), start.getItemMeta().getDisplayName());
+        }
+
+            ItemStack itemStack = XMaterial.matchXMaterial(material).get().parseItem();
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            itemMeta.setDisplayName(CC.translate(displayName));
+            itemMeta.setLore(loree);
+            itemStack.setItemMeta(itemMeta);
+
+            // Place the item in the GUI
+            int slot = plugin.getFileManager().getMissions().getConfig().getInt("Randomization.Start-Item.Slot");
+            inventory.setItem(slot, itemStack);
+            slots.put(slot, itemMeta.getDisplayName());
         }
     }
 
