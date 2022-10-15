@@ -1,8 +1,12 @@
 package com.massivecraft.factions.missions;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.iface.EconomyParticipator;
+import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.frame.FactionGUI;
 import com.massivecraft.factions.zcore.util.TL;
@@ -47,11 +51,42 @@ public class MissionGUI implements FactionGUI {
         if (plugin.getFileManager().getMissions().getConfig().getBoolean("Allow-Cancellation-Of-Missions")
                 && fPlayer.getFaction().getMissions().containsKey(missionName)
                 && action == ClickType.RIGHT) {
-                fPlayer.getFaction().getMissions().remove(missionName);
-                fPlayer.msg(TL.MISSION_MISSION_CANCELLED);
-                build();
-                fPlayer.getPlayer().openInventory(inventory);
-                return;
+
+            int cost = FactionsPlugin.getInstance().getFileManager().getMissions().getConfig().getInt("CancelMissionCost");
+
+            if (cost > 0) {
+                Faction faction = fPlayer.getFaction();
+                if (FactionsPlugin.getInstance().getFileManager().getMissions().getConfig().getBoolean("PayCancelMissionCostWithPoints")) {
+
+                    if (faction.getPoints() >= cost) {
+                        faction.setPoints(faction.getPoints() - cost);
+                        fPlayer.msg(TL.MISSION_CANCEL_POINTS_TAKEN, cost, faction.getPoints());
+                    } else {
+                        fPlayer.msg(TL.COMMAND_UPGRADES_NOT_ENOUGH_POINTS);
+                        return;
+                    }
+                }
+                else {
+                    EconomyParticipator payee = null;
+
+                    if (Conf.bankEnabled && FactionsPlugin.getInstance().getFileManager().getMissions().getConfig().getBoolean("FactionPaysCancelMissionCost", false)) {
+                        payee = faction;
+                    } else {
+                        payee = fPlayer;
+                    }
+
+                    if (!Econ.modifyMoney(payee, -cost, TL.MISSION_TOCANCEL.toString(), TL.MISSION_FORCANCEL.toString())) {
+                        return;
+                    }
+                }
+            }
+
+
+            fPlayer.getFaction().getMissions().remove(missionName);
+            fPlayer.msg(TL.MISSION_MISSION_CANCELLED);
+            build();
+            fPlayer.getPlayer().openInventory(inventory);
+            return;
 
         }
 

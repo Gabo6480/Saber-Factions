@@ -1204,6 +1204,11 @@ public enum TL {
     MISSION_MISSION_CANCELLED("&c&l[!] &7You have cancelled your factions current mission!"),
     MISSION_TRIBUTE_ITEM_DENIED_TRANSFER("&c&l[!] &7There are no tribute missions that accept &b%1$s&7."),
     MISSION_RANDOM_MODE_DENIED("&c&l[!] &7Please select the %1$s&7 item to have a random mission assigned."),
+    MISSION_CANCEL_POINTS_TAKEN("&cFaction Mission cancelled for &e%1$s points! &cNew Point Balance: &e%2$s"),
+    MISSION_CANCEL_NOT_ENOUGH_POINTS("&cYour faction does not have enough points to cancel this mission!"),
+    MISSION_TOCANCEL("to cancel this mission."),
+    MISSION_FORCANCEL("for cancelling this mission."),
+
     // F Global \\
 
 
