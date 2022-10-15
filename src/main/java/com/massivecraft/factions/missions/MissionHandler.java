@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -192,5 +193,27 @@ public class MissionHandler implements Listener {
         fPlayer.getFaction().getMissions().remove(mission.getName());
         fPlayer.getFaction().msg(TL.MISSION_MISSION_FINISHED, CC.translate(section.getString("Name")));
         fPlayer.getFaction().getCompletedMissions().add(mission.getName());
+
+        ConfigurationSection prestigeSection = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Prestige");
+        // Prestige
+        if(prestigeSection != null && prestigeSection.getBoolean("Enabled", false)
+            && plugin.getFileManager().getMissions().getConfig().getBoolean("DenyMissionsMoreThenOnce", false)){
+
+            Set<String> availableMissions = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Missions").getKeys(false)
+                    .stream().filter(key -> !key.equals("FillItem")).collect(Collectors.toSet());
+
+            // Check if the player has already completed all the missions
+            if(fPlayer.getFaction().getCompletedMissions().containsAll(availableMissions)){
+
+                fPlayer.getFaction().getCompletedMissions().removeAll(availableMissions);
+
+                fPlayer.getFaction().msg(CC.translate(prestigeSection.getString("CongratulationMessage")));
+
+                for (String command : prestigeSection.getStringList("Reward.Commands")) {
+                    FactionsPlugin.getInstance().getServer().dispatchCommand(FactionsPlugin.getInstance().getServer().getConsoleSender(), command.replace("%faction%", fPlayer.getFaction().getTag()).replace("%player%", fPlayer.getPlayer().getName()));
+                }
+            }
+        }
+
     }
 }
