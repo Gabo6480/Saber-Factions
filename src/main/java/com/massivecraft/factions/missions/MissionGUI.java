@@ -137,7 +137,7 @@ public class MissionGUI implements FactionGUI {
                 if (plugin.getFileManager().getMissions().getConfig().getBoolean("DenyMissionsMoreThenOnce")) {
                     if (fPlayer.getFaction().getCompletedMissions().contains(missionName)) {
                         material = plugin.getFileManager().getMissions().getConfig().getString("DeniedMissionMaterial", material);
-                        loreLines.add(plugin.getFileManager().getMissions().getConfig().getString("DeniedMissionExtraLore", ""));
+                        loreLines.add(ChatColor.translateAlternateColorCodes('&',plugin.getFileManager().getMissions().getConfig().getString("DeniedMissionExtraLore", "")));
                     }
                 }
 
