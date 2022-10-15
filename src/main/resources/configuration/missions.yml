@@ -9,6 +9,7 @@ Missions-GUI-Title: '&8&lFaction Missions'
 Tribute-GUI-Title: '&8&lMissions Tribute'
 MaximumMissionsAllowedAtOnce: 1
 Allow-Cancellation-Of-Missions: true
+CancellableMissionLore: "&c&oRight-Click to forfeit this mission."
 Mission-Progress-Format: '&b&lProgression: &f{progress}&7/&e{total}'
 Randomization:
   Enabled: false

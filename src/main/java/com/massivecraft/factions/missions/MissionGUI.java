@@ -154,7 +154,13 @@ public class MissionGUI implements FactionGUI {
                     loreLines.add(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Mission-Progress-Format")
                             .replace("{progress}", String.valueOf(mission.getProgress()))
                             .replace("{total}", String.valueOf(section.getConfigurationSection("Mission").get("Amount")))));
+
+                    if (plugin.getFileManager().getMissions().getConfig().getBoolean("Allow-Cancellation-Of-Missions")) {
+                        loreLines.add("");
+                        loreLines.add(ChatColor.translateAlternateColorCodes('&', plugin.getFileManager().getMissions().getConfig().getString("CancellableMissionLore", "")));
+                    }
                 }
+
                 itemMeta.setLore(loreLines);
                 itemStack.setItemMeta(itemMeta);
                 inventory.setItem(slot, itemStack);
