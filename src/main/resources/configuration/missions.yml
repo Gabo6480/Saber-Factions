@@ -27,6 +27,8 @@ Randomization:
     # in default configuration you will need to change the GUI size to 4 and for best results change the fillitem rows to 4 as well.
     Slot: 31
 DenyMissionsMoreThenOnce: true #this setting to true, means that if they complete a mission they cannot redo the same mission
+DeniedMissionMaterial: "BARRIER"
+DeniedMissionExtraLore: "&8&cYou've already completed this mission."
 
 #Mission Types: KILL, MINE, PLACE, FISH, TAME, ENCHANT, CONSUME, BREED, TRIBUTE
 Missions:

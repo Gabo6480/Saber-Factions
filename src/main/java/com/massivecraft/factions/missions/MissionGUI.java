@@ -122,20 +122,32 @@ public class MissionGUI implements FactionGUI {
             inventory.setItem(fill, fillItem);
         }
 
-        for (String key : configurationSection.getKeys(false)) {
-            if (!key.equals("FillItem")) {
-                ConfigurationSection section = configurationSection.getConfigurationSection(key);
+        for (String missionName : configurationSection.getKeys(false)) {
+            if (!missionName.equals("FillItem")) {
+                ConfigurationSection section = configurationSection.getConfigurationSection(missionName);
+
                 int slot = section.getInt("Slot");
 
-                ItemStack itemStack = XMaterial.matchXMaterial(section.getString("Material")).get().parseItem();
-                ItemMeta itemMeta = itemStack.getItemMeta();
-                itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("Name")));
+                String material = section.getString("Material", "DIRT");
                 List<String> loreLines = new ArrayList<>();
                 for (String line : section.getStringList("Lore")) {
                     loreLines.add(ChatColor.translateAlternateColorCodes('&', line));
                 }
-                if (fPlayer.getFaction().getMissions().containsKey(key)) {
-                    Mission mission = fPlayer.getFaction().getMissions().get(key);
+
+                if (plugin.getFileManager().getMissions().getConfig().getBoolean("DenyMissionsMoreThenOnce")) {
+                    if (fPlayer.getFaction().getCompletedMissions().contains(missionName)) {
+                        material = plugin.getFileManager().getMissions().getConfig().getString("DeniedMissionMaterial", material);
+                        loreLines.add(plugin.getFileManager().getMissions().getConfig().getString("DeniedMissionExtraLore", ""));
+                    }
+                }
+
+                ItemStack itemStack = XMaterial.matchXMaterial(material).get().parseItem();
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("Name")));
+
+
+                if (fPlayer.getFaction().getMissions().containsKey(missionName)) {
+                    Mission mission = fPlayer.getFaction().getMissions().get(missionName);
                     itemMeta.addEnchant(Enchantment.SILK_TOUCH, 1, true);
                     itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     loreLines.add("");
@@ -146,7 +158,7 @@ public class MissionGUI implements FactionGUI {
                 itemMeta.setLore(loreLines);
                 itemStack.setItemMeta(itemMeta);
                 inventory.setItem(slot, itemStack);
-                slots.put(slot, key);
+                slots.put(slot, missionName);
             }
         }
 
