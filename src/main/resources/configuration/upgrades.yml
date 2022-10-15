@@ -9,6 +9,7 @@
 fupgrades:
   Enabled: true
   usePointsAsCurrency: false
+  factionPaysForUpgradeCost: true
   MainMenu:
     Rows: 5
     Title: '&8&l{faction}''s Upgrade Menu'
