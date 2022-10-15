@@ -17,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -89,23 +90,49 @@ public class TributeInventoryHandler implements Listener {
             return;
         }
 
+        ItemStack[] contents = inventory.getContents();
+
         MissionHandler.handleMissionsOfType(fPlayer, MissionType.TRIBUTE, (mission, section) -> {
             String item = section.getString("Mission.Item", MissionHandler.matchAnythingRegex);
+            long targetAmount = section.getLong("Mission.Amount", 0);
+            long currentAmount = mission.getProgress();
+
+            long missingAmount = targetAmount - currentAmount;
+
             int itemCount = 0;
-
-            ItemStack[] contents = inventory.getContents();
-
             for (ItemStack itemStack : contents) {
-                if (itemStack == null)
+                if (itemStack == null || itemStack.getAmount() <= 0)
                     continue;
 
+                //If this mission is has been completed, just skip it
+                if(missingAmount <= 0)
+                    break;
+
                 if (itemStack.getType().toString().matches(item)) {
-                    itemCount += itemStack.getAmount();
+                    int itemAmount = itemStack.getAmount();
+
+                    int leftOverAmount = Math.toIntExact(Math.max(0, itemAmount - missingAmount));
+
+                    int consumedAmount = itemAmount - leftOverAmount;
+
+                    itemStack.setAmount(leftOverAmount);
+
+                    itemCount += consumedAmount;
+                    missingAmount -= consumedAmount;
                 }
             }
 
             return itemCount;
         });
+
+        //Return any leftover items
+        for (ItemStack itemStack : contents) {
+            if (itemStack == null || itemStack.getAmount() <= 0)
+                continue;
+
+            Map<Integer, ItemStack> couldNotAdd = e.getPlayer().getInventory().addItem(itemStack);
+            couldNotAdd.forEach(((i, is) -> e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), is)));
+        }
 
         inventorySet.remove(inventory);
     }
