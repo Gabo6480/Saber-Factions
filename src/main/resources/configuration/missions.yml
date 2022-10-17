@@ -33,6 +33,7 @@ Randomization:
 DenyMissionsMoreThenOnce: true #this setting to true, means that if they complete a mission they cannot redo the same mission
 DeniedMissionMaterial: "BARRIER"
 DeniedMissionExtraLore: "&cYou've already completed this mission."
+MissionDeadline: 86400000 #in milliseconds, 0 disables it
 Prestige: #requires DenyMissionsMoreThenOnce = true
   Enabled: false
   CongratulationMessage: "&aYour faction has completed all the missions!"

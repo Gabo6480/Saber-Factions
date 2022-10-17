@@ -144,6 +144,13 @@ public class MissionGUI implements FactionGUI {
 
         fPlayer.getFaction().getMissions().put(missionName, mission);
         fPlayer.msg(TL.MISSION_MISSION_STARTED, fPlayer.describeTo(fPlayer.getFaction()), CC.translate(section.getString("Name")));
+
+        long deadlineMillis = plugin.getFileManager().getMissions().getConfig().getLong("MissionDeadline", 0L);
+
+        if(deadlineMillis > 0L) {
+            MissionHandler.setDeadlineTask(mission, fPlayer.getFaction(), deadlineMillis);
+        }
+
         build();
         fPlayer.getPlayer().openInventory(inventory);
     }
