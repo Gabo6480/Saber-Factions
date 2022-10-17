@@ -34,6 +34,7 @@ DenyMissionsMoreThenOnce: true #this setting to true, means that if they complet
 DeniedMissionMaterial: "BARRIER"
 DeniedMissionExtraLore: "&cYou've already completed this mission."
 MissionDeadline: 86400000 #in milliseconds, 0 disables it
+DeadlineMissionLore: "&7&oThe mission expires in &3%1$s."
 Prestige: #requires DenyMissionsMoreThenOnce = true
   Enabled: false
   CongratulationMessage: "&aYour faction has completed all the missions!"

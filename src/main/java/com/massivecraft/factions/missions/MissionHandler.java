@@ -187,9 +187,10 @@ public class MissionHandler implements Listener {
 
     public static void setDeadlineTask(Mission mission, Faction faction, long timeTillDeadline){
         BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-            if(mission.getProgress() < plugin.getFileManager().getMissions().getConfig().getLong("Missions." + mission.getName() + ".Mission.Amount", 0L)) {
+            ConfigurationSection missionSection = plugin.getFileManager().getMissions().getConfig().getConfigurationSection("Missions." + mission.getName());
+            if(mission.getProgress() < missionSection.getLong("Mission.Amount", 0L)) {
                 faction.getMissions().remove(mission.getName());
-                faction.msg(TL.MISSION_MISSION_FAILED, CC.translate(mission.getName()));
+                faction.msg(TL.MISSION_MISSION_FAILED, CC.translate(missionSection.getString("Name")));
             }
 
             if (deadlines.containsKey(faction.getId())){

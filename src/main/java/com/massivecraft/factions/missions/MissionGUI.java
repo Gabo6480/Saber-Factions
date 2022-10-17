@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MissionGUI implements FactionGUI {
@@ -203,6 +204,21 @@ public class MissionGUI implements FactionGUI {
                     loreLines.add(CC.translate(plugin.getFileManager().getMissions().getConfig().getString("Mission-Progress-Format")
                             .replace("{progress}", String.valueOf(mission.getProgress()))
                             .replace("{total}", String.valueOf(section.getConfigurationSection("Mission").get("Amount")))));
+
+                    long deadlineMillis = plugin.getFileManager().getMissions().getConfig().getLong("MissionDeadline", 0L);
+                    if (deadlineMillis > 0) {
+
+                        long timeTillDeadline = mission.getStartTime() + deadlineMillis - System.currentTimeMillis();
+
+                        loreLines.add("");
+                        loreLines.add( FactionsPlugin.getInstance().txt.parse(plugin.getFileManager().getMissions().getConfig().getString("DeadlineMissionLore", ""),
+                                String.format("%02dh %02dm %02ds",
+                                TimeUnit.MILLISECONDS.toHours(timeTillDeadline),
+                                TimeUnit.MILLISECONDS.toMinutes(timeTillDeadline) -
+                                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeTillDeadline)),
+                                TimeUnit.MILLISECONDS.toSeconds(timeTillDeadline) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeTillDeadline)))));
+                    }
 
                     if (plugin.getFileManager().getMissions().getConfig().getBoolean("Allow-Cancellation-Of-Missions")) {
                         loreLines.add("");
