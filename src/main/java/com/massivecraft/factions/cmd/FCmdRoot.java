@@ -1,6 +1,8 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Conf;
+import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.alts.CmdAlts;
 import com.massivecraft.factions.cmd.audit.CmdAudit;
@@ -25,19 +27,25 @@ import com.massivecraft.factions.cmd.tnt.CmdTntFill;
 import com.massivecraft.factions.discord.CmdInviteBot;
 import com.massivecraft.factions.discord.CmdSetGuild;
 import com.massivecraft.factions.missions.CmdMissions;
+import com.massivecraft.factions.struct.Relation;
+import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.Logger;
+import com.massivecraft.factions.zcore.CommandVisibility;
 import com.massivecraft.factions.zcore.util.TL;
 import me.lucko.commodore.CommodoreProvider;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class FCmdRoot extends FCommand implements CommandExecutor {
+public class FCmdRoot extends FCommand implements TabExecutor {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
@@ -204,8 +212,6 @@ public class FCmdRoot extends FCommand implements CommandExecutor {
         this.setHelpShort("The faction base command");
         this.helpLong.add(FactionsPlugin.getInstance().txt.parseTags("<i>This command contains all faction stuff."));
 
-        if (CommodoreProvider.isSupported()) brigadierManager = new BrigadierManager();
-
         this.addSubCommand(this.cmdAdmin);
         this.addSubCommand(this.cmdAutoClaim);
         this.addSubCommand(this.cmdBoom);
@@ -311,6 +317,7 @@ public class FCmdRoot extends FCommand implements CommandExecutor {
         this.addSubCommand(this.cmdSetPower);
         this.addSubCommand(this.cmdSetTnt);
         addVariableCommands();
+
         if (CommodoreProvider.isSupported()) brigadierManager.build();
     }
 
@@ -416,12 +423,6 @@ public class FCmdRoot extends FCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        this.execute(new CommandContext(sender, new ArrayList<>(Arrays.asList(args)), label));
-        return true;
-    }
-
-    @Override
     public void addSubCommand(FCommand subCommand) {
         super.addSubCommand(subCommand);
         // People were getting NPE's as somehow CommodoreProvider#isSupported returned true on legacy versions.
@@ -435,4 +436,59 @@ public class FCmdRoot extends FCommand implements CommandExecutor {
         return TL.GENERIC_PLACEHOLDER;
     }
 
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        this.execute(new CommandContext(sender, new ArrayList<>(Arrays.asList(args)), label));
+        return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        // Must be a LinkedList to prevent UnsupportedOperationException.
+        List<String> argsList = new LinkedList<>(Arrays.asList(args));
+        CommandContext context = new CommandContext(sender, argsList, alias);
+        List<FCommand> commandsList = this.subCommands;
+        FCommand commandsEx = this;
+        List<String> completions = new ArrayList<>();
+        // Check for "" first arg because spigot is mangled.
+        if (context.args.get(0).equals("")) {
+            for (FCommand subCommand : commandsEx.subCommands) {
+                if (subCommand.requirements.playerOnly && sender.hasPermission(subCommand.requirements.permission.node) && subCommand.visibility != CommandVisibility.INVISIBLE)
+                    completions.addAll(subCommand.aliases);
+            }
+            return completions;
+        } else if (context.args.size() == 1) {
+            for (; !commandsList.isEmpty() && !context.args.isEmpty(); context.args.remove(0)) {
+                String cmdName = context.args.get(0).toLowerCase();
+                boolean toggle = false;
+                for (FCommand fCommand : commandsList) {
+                    for (String s : fCommand.aliases) {
+                        if (s.startsWith(cmdName)) {
+                            commandsList = fCommand.subCommands;
+                            completions.addAll(fCommand.aliases);
+                            toggle = true;
+                            break;
+                        }
+                    }
+                    if (toggle) break;
+                }
+            }
+            String lastArg = args[args.length - 1].toLowerCase();
+            completions = completions.stream()
+                    .filter(m -> m.toLowerCase().startsWith(lastArg))
+                    .collect(Collectors.toList());
+            return completions;
+        } else {
+            String lastArg = args[args.length - 1].toLowerCase();
+            for (Role value : Role.values()) completions.add(value.nicename);
+            for (Relation value : Relation.values()) completions.add(value.nicename);
+            // The stream and foreach from the old implementation looped 2 times, by looping all players -> filtered -> looped filter and added -> filtered AGAIN at the end.
+            // This loops them once and just adds, because we are filtering the arguments at the end anyways
+            for (Player player : Bukkit.getServer().getOnlinePlayers()) completions.add(player.getName());
+            for (Faction faction : Factions.getInstance().getAllFactions())
+                completions.add(ChatColor.stripColor(faction.getTag()));
+            completions = completions.stream().filter(m -> m.toLowerCase().startsWith(lastArg)).collect(Collectors.toList());
+            return completions;
+        }
+    }
 }

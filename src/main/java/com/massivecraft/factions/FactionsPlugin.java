@@ -198,7 +198,7 @@ public class FactionsPlugin extends MPlugin {
 
         this.getCommand(refCommand).setExecutor(cmdBase);
 
-        if (!CommodoreProvider.isSupported()) this.getCommand(refCommand).setTabCompleter(this);
+        if (!CommodoreProvider.isSupported()) this.getCommand(refCommand).setTabCompleter(cmdBase);
 
         this.setupPlaceholderAPI();
         factionsAddonHashMap = new HashMap<>();
@@ -352,58 +352,6 @@ public class FactionsPlugin extends MPlugin {
     @Override
     public boolean handleCommand(CommandSender sender, String commandString, boolean testOnly) {
         return sender instanceof Player && FactionsPlayerListener.preventCommand(commandString, (Player) sender) || super.handleCommand(sender, commandString, testOnly);
-    }
-
-
-    // This method must stay for < 1.12 versions
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        // Must be a LinkedList to prevent UnsupportedOperationException.
-        List<String> argsList = new LinkedList<>(Arrays.asList(args));
-        CommandContext context = new CommandContext(sender, argsList, alias);
-        List<FCommand> commandsList = cmdBase.subCommands;
-        FCommand commandsEx = cmdBase;
-        List<String> completions = new ArrayList<>();
-        // Check for "" first arg because spigot is mangled.
-        if (context.args.get(0).equals("")) {
-            for (FCommand subCommand : commandsEx.subCommands) {
-                if (subCommand.requirements.playerOnly && sender.hasPermission(subCommand.requirements.permission.node) && subCommand.visibility != CommandVisibility.INVISIBLE)
-                    completions.addAll(subCommand.aliases);
-            }
-            return completions;
-        } else if (context.args.size() == 1) {
-            for (; !commandsList.isEmpty() && !context.args.isEmpty(); context.args.remove(0)) {
-                String cmdName = context.args.get(0).toLowerCase();
-                boolean toggle = false;
-                for (FCommand fCommand : commandsList) {
-                    for (String s : fCommand.aliases) {
-                        if (s.startsWith(cmdName)) {
-                            commandsList = fCommand.subCommands;
-                            completions.addAll(fCommand.aliases);
-                            toggle = true;
-                            break;
-                        }
-                    }
-                    if (toggle) break;
-                }
-            }
-            String lastArg = args[args.length - 1].toLowerCase();
-            completions = completions.stream()
-                    .filter(m -> m.toLowerCase().startsWith(lastArg))
-                    .collect(Collectors.toList());
-            return completions;
-        } else {
-            String lastArg = args[args.length - 1].toLowerCase();
-            for (Role value : Role.values()) completions.add(value.nicename);
-            for (Relation value : Relation.values()) completions.add(value.nicename);
-            // The stream and foreach from the old implementation looped 2 times, by looping all players -> filtered -> looped filter and added -> filtered AGAIN at the end.
-            // This loops them once and just adds, because we are filtering the arguments at the end anyways
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) completions.add(player.getName());
-            for (Faction faction : Factions.getInstance().getAllFactions())
-                completions.add(ChatColor.stripColor(faction.getTag()));
-            completions = completions.stream().filter(m -> m.toLowerCase().startsWith(lastArg)).collect(Collectors.toList());
-            return completions;
-        }
     }
 
     public AsyncPlayerMap getAsyncPlayerMap() {
