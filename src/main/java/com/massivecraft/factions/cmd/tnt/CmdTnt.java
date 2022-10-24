@@ -2,10 +2,10 @@ package com.massivecraft.factions.cmd.tnt;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.massivecraft.factions.FactionsPlugin;
-import com.massivecraft.factions.cmd.Aliases;
-import com.massivecraft.factions.cmd.CommandContext;
-import com.massivecraft.factions.cmd.CommandRequirements;
-import com.massivecraft.factions.cmd.FCommand;
+import com.massivecraft.factions.cmd.core.Aliases;
+import com.massivecraft.factions.cmd.core.CommandContext;
+import com.massivecraft.factions.cmd.core.CommandRequirements;
+import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;

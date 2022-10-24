@@ -1,6 +1,6 @@
 package com.massivecraft.factions.cmd.roles;
 
-import com.massivecraft.factions.cmd.Aliases;
+import com.massivecraft.factions.cmd.core.Aliases;
 
 public class CmdDemote extends FPromoteCommand {
 

@@ -1,6 +1,10 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.cmd.core.CommandContext;
+import com.massivecraft.factions.cmd.core.CommandRequirements;
+import com.massivecraft.factions.cmd.core.FCmdRoot;
+import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.discord.Discord;
 import com.massivecraft.factions.discord.DiscordSetupAttempt;
 import com.massivecraft.factions.struct.Permission;

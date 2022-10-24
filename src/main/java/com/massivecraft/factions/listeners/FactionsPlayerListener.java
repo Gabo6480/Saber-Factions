@@ -4,7 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import com.massivecraft.factions.*;
 import com.massivecraft.factions.cmd.CmdFGlobal;
 import com.massivecraft.factions.cmd.CmdSeeChunk;
-import com.massivecraft.factions.cmd.FCmdRoot;
+import com.massivecraft.factions.cmd.core.FCmdRoot;
 import com.massivecraft.factions.cmd.audit.FLogType;
 import com.massivecraft.factions.cmd.logout.LogoutHandler;
 import com.massivecraft.factions.discord.Discord;

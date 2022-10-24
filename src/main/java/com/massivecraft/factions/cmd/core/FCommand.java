@@ -1,4 +1,4 @@
-package com.massivecraft.factions.cmd;
+package com.massivecraft.factions.cmd.core;
 
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.Faction;
@@ -14,7 +14,6 @@ import org.bukkit.ChatColor;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 public abstract class FCommand {
 
     /**
-     * @author FactionsUUID Team - Modified By CmdrKittens
+     * @author FactionsUUID Team - Modified By CmdrKittens - Further modified by Gabo6480
      */
 
     public SimpleDateFormat sdf = new SimpleDateFormat(TL.DATE_FORMAT.toString());
@@ -139,7 +138,7 @@ public abstract class FCommand {
                 if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
             }
         }
-        
+
         return completions;
     }
 

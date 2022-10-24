@@ -1,7 +1,7 @@
 package com.massivecraft.factions.addon;
 
 import com.massivecraft.factions.FactionsPlugin;
-import com.massivecraft.factions.cmd.FCommand;
+import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.util.Logger;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;

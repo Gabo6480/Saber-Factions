@@ -1,10 +1,10 @@
 package com.massivecraft.factions.cmd.tnt;
 
 import com.massivecraft.factions.FactionsPlugin;
-import com.massivecraft.factions.cmd.Aliases;
-import com.massivecraft.factions.cmd.CommandContext;
-import com.massivecraft.factions.cmd.CommandRequirements;
-import com.massivecraft.factions.cmd.FCommand;
+import com.massivecraft.factions.cmd.core.Aliases;
+import com.massivecraft.factions.cmd.core.CommandContext;
+import com.massivecraft.factions.cmd.core.CommandRequirements;
+import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.tnt.tntprovider.FactionTNTProvider;
 import com.massivecraft.factions.cmd.tnt.tntprovider.PlayerTNTProvider;
 import com.massivecraft.factions.cmd.tnt.tntprovider.TNTProvider;

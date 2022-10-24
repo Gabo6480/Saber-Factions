@@ -1,6 +1,6 @@
 package com.massivecraft.factions.cmd.tnt.tntprovider;
 
-import com.massivecraft.factions.cmd.CommandContext;
+import com.massivecraft.factions.cmd.core.CommandContext;
 
 public class FactionTNTProvider implements TNTProvider {
 

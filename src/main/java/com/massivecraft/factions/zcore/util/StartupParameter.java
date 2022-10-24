@@ -3,7 +3,7 @@ package com.massivecraft.factions.zcore.util;
 import com.cryptomorin.xseries.XMaterial;
 import com.lunarclient.bukkitapi.LunarClientAPI;
 import com.massivecraft.factions.*;
-import com.massivecraft.factions.cmd.Aliases;
+import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.audit.FLogManager;
 import com.massivecraft.factions.cmd.check.CheckTask;
 import com.massivecraft.factions.cmd.check.WeeWooTask;

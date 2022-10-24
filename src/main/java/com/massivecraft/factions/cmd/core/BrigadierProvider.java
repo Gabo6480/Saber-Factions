@@ -1,4 +1,4 @@
-package com.massivecraft.factions.cmd;
+package com.massivecraft.factions.cmd.core;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 

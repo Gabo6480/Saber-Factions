@@ -3,7 +3,7 @@ package com.massivecraft.factions.zcore.persist;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.massivecraft.factions.*;
-import com.massivecraft.factions.cmd.FCmdRoot;
+import com.massivecraft.factions.cmd.core.FCmdRoot;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.util.AsciiCompass;

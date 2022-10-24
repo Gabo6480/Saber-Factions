@@ -1,4 +1,4 @@
-package com.massivecraft.factions.cmd;
+package com.massivecraft.factions.cmd.core;
 
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.struct.Permission;

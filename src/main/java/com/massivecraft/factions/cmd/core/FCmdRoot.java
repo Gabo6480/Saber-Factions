@@ -1,9 +1,8 @@
-package com.massivecraft.factions.cmd;
+package com.massivecraft.factions.cmd.core;
 
 import com.massivecraft.factions.Conf;
-import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.cmd.*;
 import com.massivecraft.factions.cmd.alts.CmdAlts;
 import com.massivecraft.factions.cmd.audit.CmdAudit;
 import com.massivecraft.factions.cmd.check.CmdCheck;
@@ -27,22 +26,15 @@ import com.massivecraft.factions.cmd.tnt.CmdTntFill;
 import com.massivecraft.factions.discord.CmdInviteBot;
 import com.massivecraft.factions.discord.CmdSetGuild;
 import com.massivecraft.factions.missions.CmdMissions;
-import com.massivecraft.factions.struct.Relation;
-import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.Logger;
-import com.massivecraft.factions.zcore.CommandVisibility;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FCmdRoot extends FCommand implements TabExecutor {
 

@@ -1,6 +1,10 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.*;
+import com.massivecraft.factions.cmd.core.Aliases;
+import com.massivecraft.factions.cmd.core.CommandContext;
+import com.massivecraft.factions.cmd.core.CommandRequirements;
+import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.reserve.ReserveObject;
 import com.massivecraft.factions.discord.Discord;
 import com.massivecraft.factions.event.FPlayerJoinEvent;

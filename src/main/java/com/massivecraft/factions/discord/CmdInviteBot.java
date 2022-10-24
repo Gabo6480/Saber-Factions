@@ -1,7 +1,7 @@
 package com.massivecraft.factions.discord;
 
-import com.massivecraft.factions.cmd.CommandContext;
-import com.massivecraft.factions.cmd.FCommand;
+import com.massivecraft.factions.cmd.core.CommandContext;
+import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.util.TL;
 import mkremins.fanciful.FancyMessage;
