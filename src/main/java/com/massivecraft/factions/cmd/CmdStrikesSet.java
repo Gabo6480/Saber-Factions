@@ -1,20 +1,46 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CmdStrikesSet extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to set target faction's strike count
      */
 
     public CmdStrikesSet() {
         super();
         this.aliases.addAll(Aliases.strikes_set);
-        this.requiredArgs.add(0, "faction");
-        this.requiredArgs.add(1, "amount");
+        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
+        this.requiredArgs.put("amount", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(1);
+            try {
+
+                Integer.parseInt(value) ;
+                    for (int i = 0; i < 10; i++) {
+                        String completeInt = value + i;
+                        // Just to check if it can be parsed into a double
+                        Integer.parseInt(completeInt);
+                            completions.add(completeInt);
+                    }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.SETSTRIKES)
                 .playerOnly()

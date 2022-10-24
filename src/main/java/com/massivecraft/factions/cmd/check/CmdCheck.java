@@ -26,14 +26,21 @@ public class CmdCheck extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to manage checks of the sender's current faction (Unsure about the whole extent, ask the author)
      */
 
-    private SimpleDateFormat simpleDateFormat;
+    private final SimpleDateFormat simpleDateFormat;
 
     public CmdCheck() {
         this.simpleDateFormat = new SimpleDateFormat(Conf.dateFormat);
         this.aliases.addAll(Aliases.check);
-        this.requiredArgs.add("walls/buffers/settings/leaderboard");
+        this.requiredArgs.put("option", context -> new ArrayList<String>(){{
+            add("walls");
+            add("buffers");
+            add("settings");
+            add("leaderboard");
+        }});
 
         this.requirements = new CommandRequirements.Builder(Permission.CHECK)
                 .playerOnly()

@@ -3,21 +3,34 @@ package com.massivecraft.factions.cmd;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CmdPermanent extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to set a faction as permanent
      */
 
     public CmdPermanent() {
         super();
         this.aliases.addAll(Aliases.permanent_faction);
-        this.requiredArgs.add("faction tag");
+        this.requiredArgs.put("faction", context -> {
+            List<String> completions = new ArrayList<>();
+            for (Faction faction : Factions.getInstance().getAllFactions()){
+                completions.add(faction.getTag());
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.SET_PERMANENT)
                 .build();

@@ -17,17 +17,42 @@ import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class CmdMoneyWithdraw extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to withdraw money from optionally sender's current faction's or given target faction's account into the sender's account
      */
 
     public CmdMoneyWithdraw() {
         this.aliases.addAll(Aliases.money_withdraw);
 
-        this.requiredArgs.add("amount");
+        this.requiredArgs.put("amount", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(0);
+            try{
+                // Just to check if it can be parsed into a double
+                Double.parseDouble(value);
+                if(!value.contains("."))
+                 completions.add(value + ".");
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Double.parseDouble(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+            return completions;
+        });
         this.optionalArgs.put("faction", "yours");
 
         this.requirements = new CommandRequirements.Builder(Permission.MONEY_F2P)

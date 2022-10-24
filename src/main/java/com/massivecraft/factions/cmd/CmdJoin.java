@@ -7,13 +7,34 @@ import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.frame.fupgrades.UpgradeType;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdJoin extends FCommand {
+
+    /**
+     * This command is used by a player to join a faction
+     */
 
     public CmdJoin() {
         super();
         this.aliases.addAll(Aliases.join);
-        this.requiredArgs.add("faction name");
+        this.requiredArgs.put("faction", context -> {
+            List<String> completions = new ArrayList<>();
+            for (Faction faction : Factions.getInstance().getAllFactions()){
+
+                if(!faction.isNormal() || faction == context.faction
+                        || !(faction.getOpen() || faction.isInvited(context.fPlayer) || context.fPlayer.isAdminBypassing() || Permission.JOIN_ANY.has(context.sender, false)))
+                    continue;
+
+
+                completions.add(faction.getTag());
+            }
+
+            return completions;
+        });
         this.optionalArgs.put("player", "you");
 
         this.requirements = new CommandRequirements.Builder(Permission.JOIN)
@@ -24,8 +45,6 @@ public class CmdJoin extends FCommand {
     @Override
     public void perform(CommandContext context) {
         FactionsPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(FactionsPlugin.instance, () -> {
-
-
             Faction faction = context.argAsFaction(0);
             if (faction == null) {
                 return;

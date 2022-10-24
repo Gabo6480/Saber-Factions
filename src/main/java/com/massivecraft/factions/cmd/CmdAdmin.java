@@ -11,28 +11,37 @@ import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdAdmin extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to add a player as an admin/leader of the faction that the sender is currently part of
      */
 
     public CmdAdmin() {
         super();
         this.aliases.addAll(Aliases.admin);
 
-        this.requiredArgs.add("player");
+        this.requiredArgs.put("player",
+                (context) -> {
+                    List<String> completions = new ArrayList<>();
+                    for (Player player : Bukkit.getServer().getOnlinePlayers()) completions.add(player.getName());
+                    return  completions;
+                });
 
-        this.requirements = new CommandRequirements.Builder(Permission.ADMIN).build();
+        this.requirements = new CommandRequirements.Builder(Permission.ADMIN)
+                .playerOnly()
+                .build();
     }
 
     @Override
     public void perform(CommandContext context) {
-        if (context.player == null) {
-            context.msg(TL.GENERIC_PLAYERONLY);
-            return;
-        }
         // Allows admins bypass this.
         if (!context.fPlayer.isAdminBypassing() && !context.fPlayer.getRole().equals(Role.LEADER)) {
             context.msg(TL.COMMAND_ADMIN_NOTADMIN);

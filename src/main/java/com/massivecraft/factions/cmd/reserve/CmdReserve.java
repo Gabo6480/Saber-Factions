@@ -1,5 +1,8 @@
 package com.massivecraft.factions.cmd.reserve;
 
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.Aliases;
 import com.massivecraft.factions.cmd.CommandContext;
@@ -8,23 +11,31 @@ import com.massivecraft.factions.cmd.FCommand;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 /**
  * @author Saser
+ *
+ * This command is used to reserve a specific faction tag for the given player
  */
 
 public class CmdReserve extends FCommand {
 
     public CmdReserve() {
         this.aliases.addAll(Aliases.reserve);
-        this.requiredArgs.add("tag");
-        this.requiredArgs.add("player");
+        this.requiredArgs.put("faction tag" ,context -> new ArrayList<String>(){{
+            add("[<faction tag>]");
+        }});
+        this.requiredArgs.put("player", context -> FPlayers.getInstance().getAllFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
         this.requirements = new CommandRequirements.Builder(
                 Permission.RESERVE).build();
     }
 
     @Override
     public void perform(CommandContext context) {
-        ReserveObject reserve = FactionsPlugin.getInstance().getFactionReserves().stream().filter(faction -> faction.getFactionName().equalsIgnoreCase(context.argAsString(0))).findFirst().orElse(null);
+        String target = context.argAsString(0);
+        ReserveObject reserve = FactionsPlugin.getInstance().getFactionReserves().stream().filter(faction -> faction.getFactionName().equalsIgnoreCase(target)).findFirst().orElse(null);
         if (reserve != null) {
             context.msg(TL.COMMAND_RESERVE_ALREADYRESERVED, context.argAsString(0));
             return;

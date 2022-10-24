@@ -6,6 +6,8 @@ public class CmdPromote extends FPromoteCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to promote a player
      */
 
     public CmdPromote() {

@@ -32,7 +32,6 @@ import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.CommandVisibility;
 import com.massivecraft.factions.zcore.util.TL;
-import me.lucko.commodore.CommodoreProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -48,11 +47,13 @@ import java.util.stream.Collectors;
 public class FCmdRoot extends FCommand implements TabExecutor {
 
     /**
-     * @author FactionsUUID Team - Modified By CmdrKittens
+     * @author FactionsUUID Team - Modified By CmdrKittens - Further modified by Gabo6480
+     *
+     * This is the base command of the faction plugins, all other commands stem out from this one
      */
 
     public static FCmdRoot instance;
-    public BrigadierManager brigadierManager;
+    //public BrigadierManager brigadierManager;
     public CmdAdmin cmdAdmin = new CmdAdmin();
     public CmdAutoClaim cmdAutoClaim = new CmdAutoClaim();
     public CmdBoom cmdBoom = new CmdBoom();
@@ -141,7 +142,7 @@ public class FCmdRoot extends FCommand implements TabExecutor {
     public CmdColeader cmdColeader = new CmdColeader();
     public CmdBanner cmdBanner = new CmdBanner();
     public CmdTpBanner cmdTpBanner = new CmdTpBanner();
-    public CmdKillHolograms cmdKillHolograms = new CmdKillHolograms();
+    //public CmdKillHolograms cmdKillHolograms = new CmdKillHolograms();
     //public CmdInspect cmdInspect = new CmdInspect();
     public CmdCoords cmdCoords = new CmdCoords();
     public CmdShowClaims cmdShowClaims = new CmdShowClaims();
@@ -203,15 +204,17 @@ public class FCmdRoot extends FCommand implements TabExecutor {
         super();
         instance = this;
 
-        if (CommodoreProvider.isSupported()) brigadierManager = new BrigadierManager();
-
-
         this.aliases.addAll(Conf.baseCommandAliases);
         this.aliases.removeAll(Collections.<String>singletonList(null));
 
         this.setHelpShort("The faction base command");
         this.helpLong.add(FactionsPlugin.getInstance().txt.parseTags("<i>This command contains all faction stuff."));
 
+        addSubCommands();
+        addVariableCommands();
+    }
+
+    void addSubCommands(){
         this.addSubCommand(this.cmdAdmin);
         this.addSubCommand(this.cmdAutoClaim);
         this.addSubCommand(this.cmdBoom);
@@ -298,7 +301,7 @@ public class FCmdRoot extends FCommand implements TabExecutor {
         this.addSubCommand(this.cmdColeader);
         this.addSubCommand(this.cmdBanner);
         this.addSubCommand(this.cmdTpBanner);
-        this.addSubCommand(this.cmdKillHolograms);
+        //this.addSubCommand(this.cmdKillHolograms);
         this.addSubCommand(this.cmdCoords);
         this.addSubCommand(this.cmdShowClaims);
         this.addSubCommand(this.cmdLowPower);
@@ -316,15 +319,12 @@ public class FCmdRoot extends FCommand implements TabExecutor {
         this.addSubCommand(this.cmdFriendlyFire);
         this.addSubCommand(this.cmdSetPower);
         this.addSubCommand(this.cmdSetTnt);
-        addVariableCommands();
-
-        if (CommodoreProvider.isSupported()) brigadierManager.build();
     }
 
     /**
      * Add sub commands to the root if they are enabled
      */
-    public void addVariableCommands() {
+    void addVariableCommands() {
         //Discord
         if (FactionsPlugin.getInstance().getFileManager().getDiscord().fetchBoolean("Discord.useDiscordSystem") && !discordEnabled) {
             this.addSubCommand(this.cmdInviteBot);
@@ -413,22 +413,16 @@ public class FCmdRoot extends FCommand implements TabExecutor {
     }
 
     public void rebuild() {
-        if (CommodoreProvider.isSupported()) brigadierManager.build();
+        this.subCommands.clear();
+
+        addSubCommands();
+        addVariableCommands();
     }
 
     @Override
     public void perform(CommandContext context) {
         context.commandChain.add(this);
         this.cmdHelp.execute(context);
-    }
-
-    @Override
-    public void addSubCommand(FCommand subCommand) {
-        super.addSubCommand(subCommand);
-        // People were getting NPE's as somehow CommodoreProvider#isSupported returned true on legacy versions.
-        if (CommodoreProvider.isSupported()) {
-            brigadierManager.addSubCommand(subCommand);
-        }
     }
 
     @Override
@@ -446,49 +440,9 @@ public class FCmdRoot extends FCommand implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         // Must be a LinkedList to prevent UnsupportedOperationException.
         List<String> argsList = new LinkedList<>(Arrays.asList(args));
+
         CommandContext context = new CommandContext(sender, argsList, alias);
-        List<FCommand> commandsList = this.subCommands;
-        FCommand commandsEx = this;
-        List<String> completions = new ArrayList<>();
-        // Check for "" first arg because spigot is mangled.
-        if (context.args.get(0).equals("")) {
-            for (FCommand subCommand : commandsEx.subCommands) {
-                if (subCommand.requirements.playerOnly && sender.hasPermission(subCommand.requirements.permission.node) && subCommand.visibility != CommandVisibility.INVISIBLE)
-                    completions.addAll(subCommand.aliases);
-            }
-            return completions;
-        } else if (context.args.size() == 1) {
-            for (; !commandsList.isEmpty() && !context.args.isEmpty(); context.args.remove(0)) {
-                String cmdName = context.args.get(0).toLowerCase();
-                boolean toggle = false;
-                for (FCommand fCommand : commandsList) {
-                    for (String s : fCommand.aliases) {
-                        if (s.startsWith(cmdName)) {
-                            commandsList = fCommand.subCommands;
-                            completions.addAll(fCommand.aliases);
-                            toggle = true;
-                            break;
-                        }
-                    }
-                    if (toggle) break;
-                }
-            }
-            String lastArg = args[args.length - 1].toLowerCase();
-            completions = completions.stream()
-                    .filter(m -> m.toLowerCase().startsWith(lastArg))
-                    .collect(Collectors.toList());
-            return completions;
-        } else {
-            String lastArg = args[args.length - 1].toLowerCase();
-            for (Role value : Role.values()) completions.add(value.nicename);
-            for (Relation value : Relation.values()) completions.add(value.nicename);
-            // The stream and foreach from the old implementation looped 2 times, by looping all players -> filtered -> looped filter and added -> filtered AGAIN at the end.
-            // This loops them once and just adds, because we are filtering the arguments at the end anyways
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) completions.add(player.getName());
-            for (Faction faction : Factions.getInstance().getAllFactions())
-                completions.add(ChatColor.stripColor(faction.getTag()));
-            completions = completions.stream().filter(m -> m.toLowerCase().startsWith(lastArg)).collect(Collectors.toList());
-            return completions;
-        }
+
+        return this.complete(context);
     }
 }

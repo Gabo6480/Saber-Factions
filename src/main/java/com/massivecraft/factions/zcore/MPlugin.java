@@ -43,13 +43,11 @@ public abstract class MPlugin extends JavaPlugin {
     protected boolean loadSuccessful = false;
     private Integer saveTask = null;
     private boolean autoSave = true;
-    // Listeners
-    private MPluginSecretPlayerListener mPluginSecretPlayerListener;
 
     // Our stored base commands
-    private List<MCommand<?>> baseCommands = new ArrayList<>();
+    private final List<MCommand<?>> baseCommands = new ArrayList<>();
     // holds f stuck start times
-    private Map<UUID, Long> timers = new HashMap<>();
+    private final Map<UUID, Long> timers = new HashMap<>();
     // -------------------------------------------- //
     // ENABLE
     // -------------------------------------------- //
@@ -88,12 +86,12 @@ public abstract class MPlugin extends JavaPlugin {
             if (refCmd != null && !refCmd.isEmpty()) {
                 this.refCommand = (String) (refCmd.keySet().toArray()[0]);
             }
-        } catch (ClassCastException ex) {
-        }
+        } catch (ClassCastException ignored) {}
 
         // Create and register player command listener
-        this.mPluginSecretPlayerListener = new MPluginSecretPlayerListener(this);
-        getServer().getPluginManager().registerEvents(this.mPluginSecretPlayerListener, this);
+        // Listeners
+        MPluginSecretPlayerListener mPluginSecretPlayerListener = new MPluginSecretPlayerListener(this);
+        getServer().getPluginManager().registerEvents(mPluginSecretPlayerListener, this);
 
         // Register recurring tasks
         if (this.saveTask == null && Conf.saveToFileEveryXMinutes > 0.0) {

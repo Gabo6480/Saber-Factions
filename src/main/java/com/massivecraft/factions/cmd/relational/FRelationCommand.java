@@ -2,6 +2,7 @@ package com.massivecraft.factions.cmd.relational;
 
 import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.CommandContext;
 import com.massivecraft.factions.cmd.CommandRequirements;
@@ -17,17 +18,34 @@ import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class FRelationCommand extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to set the sender's current faction's desaired relation with another faction
      */
 
     public Relation targetRelation;
 
     public FRelationCommand() {
         super();
-        this.requiredArgs.add("faction tag");
+        this.requiredArgs.put("faction", context -> {
+            if(!context.faction.isNormal())
+                return null;
+
+            List<String> completions = new ArrayList<>();
+
+            for (Faction faction : Factions.getInstance().getAllFactions()){
+                if(faction.isNormal() && !context.faction.getId().equals(faction.getId()))
+                    completions.add(faction.getTag());
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.RELATION)
                 .withRole(Role.MODERATOR)

@@ -1,21 +1,38 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.struct.BanInfo;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CmdUnban extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to unban a player from the sender's current faction
      */
 
     public CmdUnban() {
         super();
         this.aliases.addAll(Aliases.unban);
-        this.requiredArgs.add("target");
+        this.requiredArgs.put("player", context -> {
+            List<String> completions = new ArrayList<>();
+
+            for(BanInfo banInfo: context.faction.getBannedPlayers()){
+                FPlayer player = FPlayers.getInstance().getById(banInfo.getBanned());
+                if(player != null)
+                    completions.add(player.getName());
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.BAN)
                 .playerOnly()
@@ -32,6 +49,7 @@ public class CmdUnban extends FCommand {
             return; // the above method sends a message if fails to find someone.
         }
 
+        // TODO Why is this check here?
         if (target.getFaction() != context.fPlayer.getFaction()) {
             if (target.getFaction().getAccess(context.fPlayer, PermissableAction.BAN) != Access.ALLOW) {
                 if (!context.fPlayer.isAdminBypassing()) {

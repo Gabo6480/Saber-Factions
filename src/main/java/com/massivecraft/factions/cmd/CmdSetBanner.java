@@ -7,6 +7,8 @@ public class CmdSetBanner extends FCommand {
 
     /**
      * @author Illyria Team
+     *
+     * This command is used to set the sender's current faction's banner
      */
 
     public CmdSetBanner() {

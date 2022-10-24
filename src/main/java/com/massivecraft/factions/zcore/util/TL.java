@@ -506,6 +506,8 @@ public enum TL {
     COMMAND_HOME_BLOCKED("&c&l[!] You may not teleport to a home that is claimed by &b%1$s"),
 
     COMMAND_INVENTORYSEE_DESCRIPTION("View a faction members inventory"),
+    COMMAND_TOINVENTORYSEE("see other faction members inventories"),
+    COMMAND_INVENTORYSEE_SEEING("%1$s's Player Inventory"),
 
     COMMAND_INSPECT_DISABLED_MSG("&c&l[!]&7 Inspect mode is now &cdisabled."),
     COMMAND_INSPECT_DISABLED_NOFAC("&c&l[!]&7 Inspect mode is now &cdisabled,&7 because you &cdo not have a faction!"),
@@ -706,6 +708,8 @@ public enum TL {
     COMMAND_DISCORDSEE_FACTION_NOTSET("&c&l[!] &b%1$s's &7discord has not yet been set!"),
     COMMAND_DISCORDSEE_FACTION_DISCORD("&c&l[!] &b%1$s's &7faction has their discord link set to &b%2$s&7."),
     COMMAND_DISCORDSEE_DESCRIPTION("&c&l[!] &7View a specific factions discord link with &b/f discord <faction>&b."),
+    COMMAND_DISCORDSEE_TOSETYOUR("set your factions Discord!"),
+    COMMAND_DISCORDSEE_TOSETANOTHER("set another factions discord link!"),
 
 
     PAYPALSEE_PLAYER_PAYPAL("&c&l[!] &7You're factions paypal is: &b%1$s&7."),
@@ -859,13 +863,24 @@ public enum TL {
 
     COMMAND_SETTNT_SUCCESS("&aSet tnt for faction &e%s &ato &b%d"),
     COMMAND_SETTNT_DESCRIPTION("set the amount of tnt for a faction"),
+    COMMAND_SETTNT_TARGETDOESNTEXIST("&cFaction does not exist!"),
+    COMMAND_SETTNT_CANTSETSYSTEM("&cYou cannot set the tnt of a System Faction!"),
+    COMMAND_SETTNT_MUSTBE_GREATERTHANZERO("&cNumber must be greater than 0."),
+    COMMAND_SETTNT_MUSTBE_LESSTHANLIMIT("&cNumber must be less than the factions tnt bank limit of %1$s."),
 
 
     COMMAND_SETPOWER_SUCCESS("&aSet power for &e%s &ato &b%d"),
     COMMAND_SETPOWER_DESCRIPTION("set current playing power for player"),
+    COMMAND_SETPOWER_CANTBEALT("&cThe target cannot be an alt account."),
+    COMMAND_SETPOWER_TARGETOFFLINE("&cPlayer is not online!"),
+    COMMAND_SETPOWER_MUSTBE_LESSTHANMAXPOWER("&cNumber must be less than the players max-power."),
+    COMMAND_SETPOWER_MUSTBE_GREATERTHANZERO("&cNumber must be greater than 0."),
 
     COMMAND_SETMAXVAULTS_DESCRIPTION("Set max vaults for a Faction."),
+    COMMAND_SETMAXVAULTS_MUSTBE_GREATERTHANZERO("&cNumber must be greater than 0."),
+    COMMAND_SETMAXVAULTS_COULDNTFINDTARGET("&cCouldn't find Faction: &e%1$s"),
     COMMAND_SETMAXVAULTS_SUCCESS("&aSet max vaults for &e%s &ato &b%d"),
+
     COMMAND_ONCOOOLDOWN("&c&l[!] &7You cannot use this command for another &b%1$s &7seconds."),
 
     COMMAND_SPAWNER_LOCK_TOGGLED("&c&l[!] &7You have set placement of spawners to %1$s"),

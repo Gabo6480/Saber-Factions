@@ -20,16 +20,20 @@ import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
+import java.util.stream.Collectors;
+
 public class CmdKickAlt extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to kick an alt account from the sender's current faction
      */
 
     public CmdKickAlt() {
         super();
         this.aliases.addAll(Aliases.alts_kick);
-        this.requiredArgs.add("player name");
+        this.requiredArgs.put("player", context -> context.faction.getAltPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
 
         this.requirements = new CommandRequirements.Builder(Permission.KICK)
                 .playerOnly()

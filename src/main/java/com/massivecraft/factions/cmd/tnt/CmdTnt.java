@@ -20,6 +20,8 @@ public class CmdTnt extends FCommand {
 
     /**
      * @author Illyria Team
+     *
+     * This command is used to manage the sender's faction tnt bank
      */
 
     public CmdTnt() {

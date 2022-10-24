@@ -22,22 +22,27 @@ public enum Role implements Permissable {
      */
 
 
-    LEADER(4, TL.ROLE_LEADER),
-    COLEADER(3, TL.ROLE_COLEADER),
-    MODERATOR(2, TL.ROLE_MODERATOR),
-    NORMAL(1, TL.ROLE_NORMAL),
-    RECRUIT(0, TL.ROLE_RECRUIT);
+    LEADER(4, TL.ROLE_LEADER, "admin", "leader"),
+    COLEADER(3, TL.ROLE_COLEADER, "coleader", "coadmin"),
+    MODERATOR(2, TL.ROLE_MODERATOR, "moderator", "mod"),
+    NORMAL(1, TL.ROLE_NORMAL, "normal", "member"),
+    RECRUIT(0, TL.ROLE_RECRUIT,"recruit","rec","newbie");
 
     public final int value;
-    public final String nicename;
+    public final String displayName;
     public final TL translation;
+    public final String[] aliases;
 
 
-    Role(final int value, final TL translation) {
+    Role(final int value, final TL translation, final String... aliases) {
         this.value = value;
-        this.nicename = translation.toString();
+        this.displayName = translation.toString();
         this.translation = translation;
+        this.aliases = aliases;
     }
+
+    public static Role highestRole(){ return Role.LEADER; }
+    public static Role lowestRole(){ return Role.RECRUIT; }
 
     public static Role getRelative(Role role, int relative) {
         return Role.getByValue(role.value + relative);
@@ -61,21 +66,12 @@ public enum Role implements Permissable {
     }
 
     public static Role fromString(String check) {
-        switch (check.toLowerCase()) {
-            case "leader":
-            case "admin":
-                return LEADER;
-            case "coleader":
-                return COLEADER;
-            case "mod":
-            case "moderator":
-                return MODERATOR;
-            case "normal":
-            case "member":
-                return NORMAL;
-            case "recruit":
-            case "rec":
-                return RECRUIT;
+        String lowercaseCheck = check.toLowerCase();
+        for (Role role: Role.values()) {
+            for (String alias: role.aliases) {
+                if(alias.equals(lowercaseCheck))
+                    return role;
+            }
         }
         return null;
     }
@@ -90,11 +86,11 @@ public enum Role implements Permissable {
 
     @Override
     public String toString() {
-        return this.nicename;
+        return this.displayName;
     }
 
     public String getRoleCapitalized() {
-        return this.nicename.replace(Character.toString(nicename.charAt(0)), Character.toString(nicename.charAt(0)).toUpperCase());
+        return this.displayName.replace(Character.toString(displayName.charAt(0)), Character.toString(displayName.charAt(0)).toUpperCase());
     }
 
     public TL getTranslation() {
@@ -153,7 +149,7 @@ public enum Role implements Permissable {
     public String replacePlaceholders(String string) {
         string = ChatColor.translateAlternateColorCodes('&', string);
 
-        String permissableName = nicename.substring(0, 1).toUpperCase() + nicename.substring(1);
+        String permissableName = displayName.substring(0, 1).toUpperCase() + displayName.substring(1);
 
         string = string.replace("{relation-color}", ChatColor.GREEN.toString());
         string = string.replace("{relation}", permissableName);

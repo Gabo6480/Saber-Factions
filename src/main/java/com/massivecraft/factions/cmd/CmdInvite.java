@@ -1,26 +1,41 @@
 package com.massivecraft.factions.cmd;
 
-import com.massivecraft.factions.Conf;
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.*;
 import com.massivecraft.factions.cmd.audit.FLogType;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 import mkremins.fanciful.FancyMessage;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdInvite extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to invite a player to be part of the sender's current faction
      */
 
     public CmdInvite() {
         super();
         this.aliases.addAll(Aliases.invite);
 
-        this.requiredArgs.add("player name");
+        this.requiredArgs.put("player", (context) -> {
+            List<String> completions = new ArrayList<>();
+            Faction senderFaction = context.faction;
+            for (FPlayer fPlayer : FPlayers.getInstance().getOnlinePlayers()){
+                if(fPlayer.getFaction().getId().equals(senderFaction.getId()))
+                    continue;
+                if(!senderFaction.isInvited(fPlayer) && !senderFaction.isBanned(fPlayer))
+                    completions.add(fPlayer.getName());
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.INVITE)
                 .playerOnly()

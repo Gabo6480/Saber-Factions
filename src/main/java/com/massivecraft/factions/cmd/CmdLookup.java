@@ -3,11 +3,13 @@ package com.massivecraft.factions.cmd;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
 import java.text.DecimalFormat;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Saser
@@ -19,7 +21,7 @@ public class CmdLookup extends FCommand {
     public CmdLookup() {
         super();
         this.aliases.addAll(Aliases.lookup);
-        this.requiredArgs.add("faction name");
+        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
 
         this.requirements = new CommandRequirements.Builder(Permission.LOOKUP)
                 .playerOnly()

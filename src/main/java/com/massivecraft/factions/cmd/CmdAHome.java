@@ -1,22 +1,32 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.event.player.PlayerTeleportEvent;
+
+import java.util.stream.Collectors;
 
 public class CmdAHome extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to teleport the given player to their faction home
      */
 
     public CmdAHome() {
         super();
         this.aliases.addAll(Aliases.ahome);
 
-        this.requiredArgs.add("player");
+        this.requiredArgs.put("player", context -> FPlayers.getInstance().getOnlinePlayers().stream().filter(fPlayer -> {
+            if (fPlayer.hasFaction())
+                return fPlayer.getFaction().hasHome();
+            return false;
+        }).map(FPlayer::getName).collect(Collectors.toList()));
 
         this.requirements = new CommandRequirements.Builder(Permission.AHOME).noDisableOnLock().build();
     }

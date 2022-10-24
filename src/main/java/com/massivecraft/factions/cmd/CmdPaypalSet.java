@@ -6,18 +6,22 @@ import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+
 public class CmdPaypalSet extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to set the sender's faction's PayPal account
      */
 
     public CmdPaypalSet() {
         this.aliases.addAll(Aliases.paypal_set);
 
-        this.optionalArgs.put("faction", "yours");
+        this.requiredArgs.put("email", context -> new ArrayList<String>(){{add("[<email>]");}});
 
-        this.requiredArgs.add("email");
+        this.optionalArgs.put("faction", "yours");
 
         this.requirements = new CommandRequirements.Builder(Permission.PAYPALSET)
                 .playerOnly()

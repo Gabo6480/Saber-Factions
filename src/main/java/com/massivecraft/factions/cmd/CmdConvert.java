@@ -7,15 +7,22 @@ import com.massivecraft.factions.zcore.persist.json.FactionsJSON;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.command.ConsoleCommandSender;
 
+import java.util.ArrayList;
+
 public class CmdConvert extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to convert the plugin's backend settings
      */
 
     public CmdConvert() {
         this.aliases.addAll(Aliases.convert);
-        this.requiredArgs.add("[MYSQL|JSON]");
+        this.requiredArgs.put("backend", context -> new ArrayList<String>(){{
+            //add("MYSQL"); TODO add MySQL storage
+            add("JSON");
+        }});
 
         this.requirements = new CommandRequirements.Builder(Permission.CONVERT)
                 .build();

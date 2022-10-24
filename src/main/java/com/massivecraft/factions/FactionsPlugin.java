@@ -37,7 +37,6 @@ import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.frame.fupgrades.UpgradesListener;
 import com.massivecraft.factions.zcore.util.ShutdownParameter;
 import com.massivecraft.factions.zcore.util.StartupParameter;
-import me.lucko.commodore.CommodoreProvider;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -89,7 +88,6 @@ public class FactionsPlugin extends MPlugin {
     private Integer AutoLeaveTask = null;
     private ClipPlaceholderAPIManager clipPlaceholderAPIManager;
     private boolean mvdwPlaceholderAPIManager = false;
-    private Listener[] eventsListener;
     private Worldguard wg;
     public LunarClientAPI lunarClientAPI;
 
@@ -174,7 +172,7 @@ public class FactionsPlugin extends MPlugin {
         }
 
         // Register Event Handlers
-        eventsListener = new Listener[]{
+        Listener[] eventsListener = new Listener[]{
                 new FactionsChatListener(),
                 new FactionsEntityListener(),
                 new FactionsExploitListener(),
@@ -197,8 +195,7 @@ public class FactionsPlugin extends MPlugin {
         this.asyncPlayerMap = new AsyncPlayerMap(this);
 
         this.getCommand(refCommand).setExecutor(cmdBase);
-
-        if (!CommodoreProvider.isSupported()) this.getCommand(refCommand).setTabCompleter(cmdBase);
+        this.getCommand(refCommand).setTabCompleter(cmdBase);
 
         this.setupPlaceholderAPI();
         factionsAddonHashMap = new HashMap<>();

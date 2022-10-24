@@ -29,11 +29,11 @@ public enum Relation implements Permissable {
     ENEMY(0, TL.RELATION_ENEMY_SINGULAR.toString());
 
     public final int value;
-    public final String nicename;
+    public final String displayName;
 
-    Relation(final int value, final String nicename) {
+    Relation(final int value, final String displayName) {
         this.value = value;
-        this.nicename = nicename;
+        this.displayName = displayName;
     }
 
     public static Relation fromString(String s) {
@@ -54,7 +54,7 @@ public enum Relation implements Permissable {
 
     @Override
     public String toString() {
-        return this.nicename;
+        return this.displayName;
     }
 
     public String getTranslation() {
@@ -233,7 +233,7 @@ public enum Relation implements Permissable {
     public String replacePlaceholders(String string) {
         string = ChatColor.translateAlternateColorCodes('&', string);
 
-        String permissableName = nicename.substring(0, 1).toUpperCase() + nicename.substring(1);
+        String permissableName = displayName.substring(0, 1).toUpperCase() + displayName.substring(1);
 
         string = string.replace("{relation-color}", getColor().toString());
         string = string.replace("{relation}", permissableName);

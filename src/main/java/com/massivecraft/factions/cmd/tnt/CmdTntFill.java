@@ -26,15 +26,59 @@ import java.util.stream.Collectors;
 
 public class CmdTntFill extends FCommand {
 
-    private Map<Player, TNTFillTask> fillTaskMap;
+    /**
+     * This command is used to fill all dispensers within a radius with TNT from the sender's Inventory and TNT Bank of their current faction
+     */
+
+    private final Map<Player, TNTFillTask> fillTaskMap;
 
     public CmdTntFill() {
         super();
         this.fillTaskMap = new WeakHashMap<>();
         this.aliases.addAll(Aliases.tnt_tntfill);
 
-        this.requiredArgs.add("radius");
-        this.requiredArgs.add("amount");
+        this.requiredArgs.put("radius", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(0);
+            int maxRadius = FactionsPlugin.getInstance().getConfig().getInt("Tntfill.max-radius", -1);
+            try {
+
+                if(maxRadius > 0 && Integer.parseInt(value) <= maxRadius)
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    if(Integer.parseInt(completeInt) <= maxRadius)
+                        completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });
+        this.requiredArgs.put("amount", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(1);
+            int maxAmount = FactionsPlugin.getInstance().getConfig().getInt("Tntfill.max-amount", -1);
+            try {
+
+                if(maxAmount > 0 && Integer.parseInt(value) <= maxAmount)
+                    for (int i = 0; i < 10; i++) {
+                        String completeInt = value + i;
+                        // Just to check if it can be parsed into a double
+                        if(Integer.parseInt(completeInt) <= maxAmount)
+                            completions.add(completeInt);
+                    }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.TNTFILL).playerOnly().memberOnly().withAction(PermissableAction.TNTFILL).build();
     }
@@ -51,18 +95,14 @@ public class CmdTntFill extends FCommand {
             return;
         }
 
-        // Don't do I/O unless necessary
-        try {
-            Integer.parseInt(context.args.get(0));
-            Integer.parseInt(context.args.get(1));
-        } catch (NumberFormatException e) {
+        context.msg(TL.COMMAND_TNTFILL_HEADER);
+        Integer radius = context.argAsInt(0); // We don't know the max yet, so let's not assume.
+        Integer amount = context.argAsInt(1); // We don't know the max yet, so let's not assume.
+
+        if(radius == null || amount == null){
             context.msg(TL.COMMAND_TNT_INVALID_NUM);
             return;
         }
-
-        context.msg(TL.COMMAND_TNTFILL_HEADER);
-        int radius = context.argAsInt(0, 0); // We don't know the max yet, so let's not assume.
-        int amount = context.argAsInt(1, 0); // We don't know the max yet, so let's not assume.
 
         if (amount <= 0 || radius <= 0) {
             context.msg(TL.COMMAND_TNT_POSITIVE);

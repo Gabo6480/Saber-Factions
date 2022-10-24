@@ -11,17 +11,35 @@ import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FPromoteCommand extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to modfiy the rank faction member
      */
 
-    public int relative = 0;
+    protected int relative = 0;
 
     public FPromoteCommand() {
         super();
-        this.requiredArgs.add("player");
+        this.requiredArgs.put("member", context -> {
+            List<String> completions = new ArrayList<>();
+
+            for (FPlayer fPlayer : context.faction.getFPlayers()) {
+                if (fPlayer.isAlt()
+                        || fPlayer.getRole() == Role.lowestRole() && relative <= 0
+                        || fPlayer.getRole() == Role.highestRole() && relative > 0)
+                    continue;
+
+                completions.add(fPlayer.getName());
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.PROMOTE)
                 .playerOnly()
@@ -62,11 +80,6 @@ public class FPromoteCommand extends FCommand {
                 context.msg(TL.COMMAND_PROMOTE_HIGHER_RANK, target.getName());
                 return;
             }
-            // Don't allow people to demote people who already have the lowest rank.
-            if (current.value == 0 && relative <= 0) {
-                context.msg(TL.COMMAND_PROMOTE_LOWEST_RANK, target.getName());
-                return;
-            }
             // Don't allow people to promote people to their same or higher rank.
             if (context.fPlayer.getRole().value <= promotion.value) {
                 context.msg(TL.COMMAND_PROMOTE_NOT_ALLOWED);
@@ -79,18 +92,13 @@ public class FPromoteCommand extends FCommand {
         }
 
         // Don't allow people to demote people who already have the lowest rank.
-        if (current.value == 0 && relative <= 0) {
+        if (current == Role.lowestRole() && relative <= 0) {
             context.msg(TL.COMMAND_PROMOTE_LOWEST_RANK, target.getName());
             return;
         }
         // Don't allow people to promote people who already have the highest rank.
-        if (current.value == 4 && relative > 0) {
+        if (current == Role.highestRole() && relative > 0) {
             context.msg(TL.COMMAND_PROMOTE_HIGHEST_RANK, target.getName());
-            return;
-        }
-        // Don't allow people to promote people to their same or higher rnak.
-        if (context.fPlayer.getRole().value <= promotion.value) {
-            context.msg(TL.COMMAND_PROMOTE_NOT_ALLOWED);
             return;
         }
 
@@ -99,11 +107,11 @@ public class FPromoteCommand extends FCommand {
         // Success!
         target.setRole(promotion);
         if (target.isOnline()) {
-            target.msg(TL.COMMAND_PROMOTE_TARGET, action, promotion.nicename);
+            target.msg(TL.COMMAND_PROMOTE_TARGET, action, promotion.displayName);
         }
 
-        context.msg(TL.COMMAND_PROMOTE_SUCCESS, action, target.getName(), promotion.nicename);
-        FactionsPlugin.instance.getFlogManager().log(context.faction, FLogType.ROLE_PERM_EDIT, context.fPlayer.getName(), action, target.getName(), promotion.nicename);
+        context.msg(TL.COMMAND_PROMOTE_SUCCESS, action, target.getName(), promotion.displayName);
+        FactionsPlugin.instance.getFlogManager().log(context.faction, FLogType.ROLE_PERM_EDIT, context.fPlayer.getName(), action, target.getName(), promotion.displayName);
 
     }
 

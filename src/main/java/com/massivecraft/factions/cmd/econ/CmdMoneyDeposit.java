@@ -14,18 +14,44 @@ import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class CmdMoneyDeposit extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to deposit money from sender's account into optionally their faction or given target faction
      */
 
     public CmdMoneyDeposit() {
         super();
         this.aliases.addAll(Aliases.money_deposit);
 
-        this.requiredArgs.add("amount");
+        this.requiredArgs.put("amount", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(0);
+            try{
+                // Just to check if it can be parsed into a double
+                Double.parseDouble(value);
+                if(!value.contains("."))
+                completions.add(value + ".");
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Double.parseDouble(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+            return completions;
+        });
+
         this.optionalArgs.put("faction", "yours");
 
         this.requirements = new CommandRequirements.Builder(Permission.MONEY_DEPOSIT)

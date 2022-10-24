@@ -17,11 +17,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class CmdInventorySee extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to see the inventory of a member of sender's current faction
      */
 
     public CmdInventorySee() {
@@ -29,7 +32,7 @@ public class CmdInventorySee extends FCommand {
 
         this.aliases.addAll(Aliases.invsee);
 
-        this.requiredArgs.add("member name");
+        this.requiredArgs.put("member", context -> context.faction.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
 
         this.requirements = new CommandRequirements.Builder(Permission.INVSEE)
                 .playerOnly()
@@ -45,7 +48,7 @@ public class CmdInventorySee extends FCommand {
 
         Access use = context.fPlayer.getFaction().getAccess(context.fPlayer, PermissableAction.TERRITORY);
         if (use == Access.DENY || (use == Access.UNDEFINED && !context.assertMinRole(Role.MODERATOR))) {
-            context.msg(TL.GENERIC_NOPERMISSION, "see other faction members inventories");
+            context.msg(TL.GENERIC_NOPERMISSION, TL.COMMAND_TOINVENTORYSEE.toString());
             return;
         }
 
@@ -63,9 +66,13 @@ public class CmdInventorySee extends FCommand {
 
     public Inventory createCopy(Player player) {
         FPlayer fPlayer = FPlayers.getInstance().getByPlayer(player);
-        Inventory inventory = Bukkit.createInventory(null, player.getInventory().getSize() + 9, fPlayer.getNameAndTag() + "'s Player Inventory");
+        // This equation is done in order to ensure that the inventory size is a multiple of 9
+        // and that the whole inventory contents will fit inside it
+        int inventorySize = (player.getInventory().getSize() / 9 + 1) * 9;
+        Inventory inventory = Bukkit.createInventory(null, inventorySize, FactionsPlugin.getInstance().txt.parse(TL.COMMAND_INVENTORYSEE_SEEING.toString(), fPlayer.getNameAndTag()));
         ItemStack[] armor = Objects.requireNonNull(player.getEquipment()).getArmorContents();
         ItemStack[] items = player.getInventory().getContents();
+
         for (int i = 0; i < items.length; ++i) {
             ItemStack item = items[i];
             if (item != null && item.getType() != Material.AIR) {

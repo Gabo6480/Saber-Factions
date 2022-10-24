@@ -24,13 +24,21 @@ public class CmdCreate extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used by players to create a new faction
      */
 
     public CmdCreate() {
         super();
         this.aliases.addAll(Aliases.create);
 
-        this.requiredArgs.add("faction tag");
+        this.requiredArgs.put("faction tag", (context) -> {
+            String tag = context.argAsString(0);
+            if (Factions.getInstance().isTagTaken(tag) || !MiscUtil.validateTag(tag).isEmpty() && tag.length() >= Conf.factionTagLengthMin)
+                return null;
+
+            return new ArrayList<String>(){{add("[<faction tag>]");}};
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.CREATE)
                 .playerOnly()

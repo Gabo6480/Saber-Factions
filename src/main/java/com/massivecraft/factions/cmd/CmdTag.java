@@ -18,12 +18,20 @@ public class CmdTag extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to change a faction's tag
      */
 
     public CmdTag() {
         this.aliases.addAll(Aliases.tag);
 
-        this.requiredArgs.add("faction tag");
+        this.requiredArgs.put("faction tag", context -> {
+            String tag = context.argAsString(0);
+            if (Factions.getInstance().isTagTaken(tag) || !MiscUtil.validateTag(tag).isEmpty() && tag.length() >= Conf.factionTagLengthMin)
+                return null;
+
+            return new ArrayList<String>(){{add("[<faction tag>]");}};
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.TAG)
                 .withRole(Role.COLEADER)
@@ -36,8 +44,6 @@ public class CmdTag extends FCommand {
     public void perform(CommandContext context) {
 
         FactionsPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(FactionsPlugin.instance, () -> {
-
-
             String tag = context.argAsString(0);
 
             // TODO does not first test cover selfcase?

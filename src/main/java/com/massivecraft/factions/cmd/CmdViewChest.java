@@ -1,21 +1,26 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
+
+import java.util.stream.Collectors;
 
 public class CmdViewChest extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to view specified faction's faction chest
      */
 
     public CmdViewChest() {
         super();
         this.aliases.addAll(Aliases.viewChest);
 
-        this.requiredArgs.add("faction name");
+        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
 
         this.requirements = new CommandRequirements.Builder(Permission.VIEWCHEST)
                 .playerOnly()

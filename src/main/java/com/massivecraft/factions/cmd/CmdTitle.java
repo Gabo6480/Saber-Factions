@@ -7,15 +7,19 @@ import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
 import com.massivecraft.factions.zcore.util.TextUtil;
 
+import java.util.stream.Collectors;
+
 public class CmdTitle extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to declare a member's title inside the sender's faction
      */
 
     public CmdTitle() {
         this.aliases.addAll(Aliases.title);
-        this.requiredArgs.add("player name");
+        this.requiredArgs.put("player", context -> context.faction.getFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
         this.optionalArgs.put("title", "");
 
         this.requirements = new CommandRequirements.Builder(Permission.TITLE)

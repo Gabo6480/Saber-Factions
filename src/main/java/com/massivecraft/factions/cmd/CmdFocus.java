@@ -1,21 +1,40 @@
 package com.massivecraft.factions.cmd;
 
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.*;
 import com.massivecraft.factions.scoreboards.FTeamWrapper;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdFocus extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to indicate to the sender's current faction to focus a specific player
      */
 
     public CmdFocus() {
         aliases.addAll(Aliases.focus);
 
-        requiredArgs.add("player");
+        requiredArgs.put("player", (context) -> {
+            List<String> completions = new ArrayList<>();
+            for (FPlayer player : FPlayers.getInstance().getOnlinePlayers()){
+                if(player.getFaction().getId().equals(context.faction.getId()))
+                    continue;
+
+                completions.add(player.getName());
+            }
+
+            if(completions.isEmpty())
+                return null;
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.FOCUS)
                 .playerOnly()
@@ -33,6 +52,7 @@ public class CmdFocus extends FCommand {
         if (target == null) {
             return;
         }
+
         if (target.getFaction().getId().equalsIgnoreCase(context.faction.getId())) {
             context.msg(TL.COMMAND_FOCUS_SAMEFACTION);
             return;

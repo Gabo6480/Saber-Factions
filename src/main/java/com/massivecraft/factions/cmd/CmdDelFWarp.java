@@ -5,16 +5,21 @@ import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class CmdDelFWarp extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to delete a warp from the faction that the sender is currently in
      */
 
     public CmdDelFWarp() {
         super();
         this.aliases.addAll(Aliases.deletefwarp);
-        this.requiredArgs.add("warp name");
+        this.requiredArgs.put("warp", context -> Collections.list(context.faction.getWarps().keys()));
 
         this.requirements = new CommandRequirements.Builder(Permission.SETWARP)
                 .playerOnly()

@@ -15,13 +15,15 @@ public class CmdColeader extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to promote a player to coleader
      */
 
     public CmdColeader() {
         super();
         this.aliases.addAll(Aliases.coleader);
 
-        this.requiredArgs.add("name");
+        this.optionalArgs.put("member", "");
 
         this.requirements = new CommandRequirements.Builder(Permission.COLEADER)
                 .memberOnly()
@@ -79,7 +81,8 @@ public class CmdColeader extends FCommand {
             you.setRole(Role.MODERATOR);
             targetFaction.msg(TL.COMMAND_COLEADER_REVOKED, you.describeTo(targetFaction, true));
             context.msg(TL.COMMAND_COLEADER_REVOKES, you.describeTo(context.fPlayer, true));
-        } else {
+        }
+        else {
             // Give
             you.setRole(Role.COLEADER);
             targetFaction.msg(TL.COMMAND_COLEADER_PROMOTED, you.describeTo(targetFaction, true));

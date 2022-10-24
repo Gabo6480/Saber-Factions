@@ -8,15 +8,27 @@ import com.massivecraft.factions.util.LazyLocation;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+
 public class CmdSetFWarp extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to create a warp point at the sender's location
      */
 
     public CmdSetFWarp() {
         this.aliases.addAll(Aliases.setWarp);
-        this.requiredArgs.add("warp name");
+        this.requiredArgs.put("warp name", context -> {
+            String warp = context.argAsString(0);
+            if(context.faction.isWarp(warp))
+                return null;
+
+            return new ArrayList<String>() {{
+                add("[<warp name>]");
+            }};
+        });
         this.optionalArgs.put("password", "password");
         this.requirements = new CommandRequirements.Builder(Permission.SETWARP).playerOnly().memberOnly().withAction(PermissableAction.SETWARP).build();
     }

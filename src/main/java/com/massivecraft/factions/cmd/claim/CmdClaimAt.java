@@ -13,20 +13,66 @@ import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CmdClaimAt extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to claim a chunk for the sender's faction at given location
      */
 
     public CmdClaimAt() {
         super();
         this.aliases.addAll(Aliases.claim_at);
 
-        this.requiredArgs.add("world");
-        this.requiredArgs.add("x");
-        this.requiredArgs.add("z");
+        this.requiredArgs.put("world", context -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()));
+        this.requiredArgs.put("x", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(1);
+            try {
+                // Just to check if it can be parsed into a double
+                Integer.parseInt(value);
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Integer.parseInt(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });
+        this.requiredArgs.put("z", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(2);
+            try {
+                // Just to check if it can be parsed into a double
+                Integer.parseInt(value);
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Integer.parseInt(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.CLAIMAT)
                 .playerOnly()

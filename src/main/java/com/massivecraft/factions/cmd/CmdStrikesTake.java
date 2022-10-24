@@ -1,20 +1,47 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CmdStrikesTake extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to reduce the target faction's strike count by the given number
      */
 
     public CmdStrikesTake() {
         super();
         this.aliases.addAll(Aliases.strikes_take);
-        this.requiredArgs.add(0, "faction");
-        this.requiredArgs.add(1, "number of strikes");
+        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
+        /*this.requiredArgs.put("amount", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(1);
+            try {
+
+                Integer.parseInt(value) ;
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Integer.parseInt(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });*/
+        this.optionalArgs.put("amount","number");
 
         this.requirements = new CommandRequirements.Builder(Permission.SETSTRIKES)
                 .playerOnly()
@@ -28,7 +55,7 @@ public class CmdStrikesTake extends FCommand {
             context.msg(TL.COMMAND_STRIKES_TARGET_INVALID, context.argAsString(0));
             return;
         }
-        target.setStrikes(target.getStrikes() - context.argAsInt(1));
+        target.setStrikes(target.getStrikes() - context.argAsInt(1, 1));
         context.msg(TL.COMMAND_STRIKES_CHANGED, target.getTag(), target.getStrikes());
     }
 

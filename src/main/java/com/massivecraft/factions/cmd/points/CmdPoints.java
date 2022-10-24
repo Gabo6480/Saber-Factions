@@ -12,6 +12,8 @@ public class CmdPoints extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This is the base command for all point related commands
      */
 
     public CmdPointsRemove cmdPointsRemove = new CmdPointsRemove();
@@ -23,16 +25,15 @@ public class CmdPoints extends FCommand {
         super();
         this.aliases.addAll(Aliases.points_points);
 
-        this.requirements = new CommandRequirements.Builder(Permission.POINTS)
-                .playerOnly()
-                .build();
-
-
         this.addSubCommand(this.cmdPointsBalance);
         this.addSubCommand(this.cmdPointsAdd);
         this.addSubCommand(this.cmdPointsRemove);
         this.addSubCommand(this.cmdPointsSet);
         this.addSubCommand(this.cmdPointsBalance);
+
+        this.requirements = new CommandRequirements.Builder(Permission.POINTS)
+                .playerOnly()
+                .build();
     }
 
 

@@ -4,6 +4,7 @@ import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,19 +12,152 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CmdConfig extends FCommand {
 
-    private static HashMap<String, String> properFieldNames = new HashMap<>();
+    /**
+     * This command is used to change the settings inside of conf.yml while the plugin is still running.
+     */
+
+    private static final HashMap<String, String> properFieldNames = new HashMap<>();
 
     public CmdConfig() {
         super();
         this.aliases.addAll(Aliases.config);
 
-        this.requiredArgs.add("setting");
-        this.requiredArgs.add("value");
+        this.requiredArgs.put("setting",
+                (context) -> {
+                    List<String> completions = new ArrayList<>();
+                    for (Field field : Conf.class.getDeclaredFields()) completions.add(field.getName());
+                    return  completions;
+                });
+
+        this.requiredArgs.put("value",
+                (context) -> {
+                    List<String> completions = new ArrayList<>();
+
+                    String fieldName = getAsValidFieldName(context.argAsString(0));
+                    String value = concatArguments(context.args.subList(1,context.args.size()));
+
+                    try {
+                        Field target = Conf.class.getField(fieldName);
+
+                        // boolean
+                        if (target.getType() == boolean.class) {
+                            completions.add("true");
+                            completions.add("false");
+                        }
+
+                        // int
+                        else if (target.getType() == int.class) {
+                            // Just to check if it can be parsed into an int
+                            Integer.parseInt(value);
+
+                            for (int i = 0; i < 10; i++) {
+                                String completeInt = value + i;
+                                // Just to check if it can be parsed into an int
+                                Integer.parseInt(completeInt);
+                                completions.add(completeInt);
+                            }
+                        }
+
+                        // long
+                        else if (target.getType() == long.class) {
+                            // Just to check if it can be parsed into a long
+                            Long.parseLong(value);
+
+                            for (int i = 0; i < 10; i++) {
+                                String completeInt = value + i;
+                                // Just to check if it can be parsed into a long
+                                Long.parseLong(completeInt);
+                                completions.add(completeInt);
+                            }
+                        }
+
+                        // double
+                        else if (target.getType() == double.class) {
+                            // Just to check if it can be parsed into a double
+                            Double.parseDouble(value);
+                            if(!value.contains(".")) completions.add(value + ".");
+                            for (int i = 0; i < 10; i++) {
+                                String completeInt = value + i;
+                                // Just to check if it can be parsed into a double
+                                Double.parseDouble(completeInt);
+                                completions.add(completeInt);
+                            }
+                        }
+
+                        // float
+                        else if (target.getType() == float.class) {
+                            // Just to check if it can be parsed into a float
+                            Float.parseFloat(value);
+                            completions.add(value + ".");
+                            for (int i = 0; i < 10; i++) {
+                                String completeInt = value + i;
+                                // Just to check if it can be parsed into a float
+                                Float.parseFloat(completeInt);
+                                completions.add(completeInt);
+                            }
+
+                        }
+
+                        // String
+                        else if (target.getType() == String.class) {
+                            target.set(null, value);
+                            completions.add("[<string>]");
+                        }
+
+                        // ChatColor
+                        else if (target.getType() == ChatColor.class) {
+                            completions.addAll(Arrays.stream(ChatColor.values()).map(ChatColor::toString).collect(Collectors.toList()));
+                        }
+
+                        // Set<?> or other parameterized collection
+                        else if (target.getGenericType() instanceof ParameterizedType) {
+                            ParameterizedType targSet = (ParameterizedType) target.getGenericType();
+                            Type innerType = targSet.getActualTypeArguments()[0];
+
+                            // not a Set, somehow, and that should be the only collection we're using in Conf.java
+                            if (targSet.getRawType() != Set.class) {
+                                return null;
+                            }
+
+                            // Set<Material>
+                            else if (innerType == Material.class) {
+                                completions.addAll(Arrays.stream(Material.values()).map(Material::toString).collect(Collectors.toList()));
+                            }
+
+                            // Set<String>
+                            else if (innerType == String.class) {
+                                @SuppressWarnings("unchecked") Set<String> stringSet = (Set<String>) target.get(null);
+
+                                completions.add("[<new string>]");
+                                completions.addAll(stringSet);
+                            }
+
+                            // Set of unknown type
+                            else {
+                                return null;
+                            }
+                        }
+
+                        // unknown type
+                        else {
+                            return null;
+                        }
+                    }
+                    catch (NumberFormatException ex) {
+                        if(completions.isEmpty())
+                            return null;
+                    }
+                    catch (Exception ignored) {
+                        return null;
+                    }
+
+                    return  completions;
+                });
 
         this.requirements = new CommandRequirements.Builder(Permission.CONFIG)
                 .noErrorOnManyArgs()
@@ -32,39 +166,24 @@ public class CmdConfig extends FCommand {
 
     @Override
     public void perform(CommandContext context) {
-        // store a lookup map of lowercase field names paired with proper capitalization field names
-        // that way, if the person using this command messes up the capitalization, we can fix that
-        if (properFieldNames.isEmpty()) {
-            Field[] fields = Conf.class.getDeclaredFields();
-            for (Field field : fields) {
-                properFieldNames.put(field.getName().toLowerCase(), field.getName());
-            }
-        }
 
-        String field = context.argAsString(0).toLowerCase();
-        if (field.startsWith("\"") && field.endsWith("\"")) {
-            field = field.substring(1, field.length() - 1);
-        }
-        String fieldName = properFieldNames.get(field);
+        String fieldName = getAsValidFieldName(context.argAsString(0));
 
         if (fieldName == null || fieldName.isEmpty()) {
-            context.msg(TL.COMMAND_CONFIG_NOEXIST, field);
+            context.msg(TL.COMMAND_CONFIG_NOEXIST, context.argAsString(0));
             return;
         }
 
         String success;
-
-        StringBuilder value = new StringBuilder(context.args.get(1));
-        for (int i = 2; i < context.args.size(); i++) {
-            value.append(' ').append(context.args.get(i));
-        }
+        // Concat all subsequent args after the 1st one
+        String value = concatArguments(context.args.subList(1,context.args.size()));
 
         try {
             Field target = Conf.class.getField(fieldName);
 
             // boolean
             if (target.getType() == boolean.class) {
-                boolean targetValue = context.strAsBool(value.toString());
+                boolean targetValue = context.strAsBool(value);
                 target.setBoolean(null, targetValue);
 
                 if (targetValue) {
@@ -77,7 +196,7 @@ public class CmdConfig extends FCommand {
             // int
             else if (target.getType() == int.class) {
                 try {
-                    int intVal = Integer.parseInt(value.toString());
+                    int intVal = Integer.parseInt(value);
                     target.setInt(null, intVal);
                     success = "\"" + fieldName + TL.COMMAND_CONFIG_OPTIONSET + intVal + ".";
                 } catch (NumberFormatException ex) {
@@ -89,7 +208,7 @@ public class CmdConfig extends FCommand {
             // long
             else if (target.getType() == long.class) {
                 try {
-                    long longVal = Long.parseLong(value.toString());
+                    long longVal = Long.parseLong(value);
                     target.setLong(null, longVal);
                     success = "\"" + fieldName + TL.COMMAND_CONFIG_OPTIONSET + longVal + ".";
                 } catch (NumberFormatException ex) {
@@ -101,7 +220,7 @@ public class CmdConfig extends FCommand {
             // double
             else if (target.getType() == double.class) {
                 try {
-                    double doubleVal = Double.parseDouble(value.toString());
+                    double doubleVal = Double.parseDouble(value);
                     target.setDouble(null, doubleVal);
                     success = "\"" + fieldName + TL.COMMAND_CONFIG_OPTIONSET + doubleVal + ".";
                 } catch (NumberFormatException ex) {
@@ -113,7 +232,7 @@ public class CmdConfig extends FCommand {
             // float
             else if (target.getType() == float.class) {
                 try {
-                    float floatVal = Float.parseFloat(value.toString());
+                    float floatVal = Float.parseFloat(value);
                     target.setFloat(null, floatVal);
                     success = "\"" + fieldName + TL.COMMAND_CONFIG_OPTIONSET + floatVal + ".";
                 } catch (NumberFormatException ex) {
@@ -124,7 +243,7 @@ public class CmdConfig extends FCommand {
 
             // String
             else if (target.getType() == String.class) {
-                target.set(null, value.toString());
+                target.set(null, value);
                 success = "\"" + fieldName + TL.COMMAND_CONFIG_OPTIONSET + value + "\".";
             }
 
@@ -132,16 +251,16 @@ public class CmdConfig extends FCommand {
             else if (target.getType() == ChatColor.class) {
                 ChatColor newColor = null;
                 try {
-                    newColor = ChatColor.valueOf(value.toString().toUpperCase());
+                    newColor = ChatColor.valueOf(value.toUpperCase());
                 } catch (IllegalArgumentException ex) {
 
                 }
                 if (newColor == null) {
-                    context.sendMessage(TL.COMMAND_CONFIG_INVALID_COLOUR.format(fieldName, value.toString().toUpperCase()));
+                    context.sendMessage(TL.COMMAND_CONFIG_INVALID_COLOUR.format(fieldName, value.toUpperCase()));
                     return;
                 }
                 target.set(null, newColor);
-                success = "\"" + fieldName + TL.COMMAND_CONFIG_COLOURSET + value.toString().toUpperCase() + "\".";
+                success = "\"" + fieldName + TL.COMMAND_CONFIG_COLOURSET + value.toUpperCase() + "\".";
             }
 
             // Set<?> or other parameterized collection
@@ -159,12 +278,10 @@ public class CmdConfig extends FCommand {
                 else if (innerType == Material.class) {
                     Material newMat = null;
                     try {
-                        newMat = Material.valueOf(value.toString().toUpperCase());
-                    } catch (IllegalArgumentException ex) {
-
-                    }
+                        newMat = Material.valueOf(value.toUpperCase());
+                    } catch (IllegalArgumentException ignored) {}
                     if (newMat == null) {
-                        context.sendMessage(TL.COMMAND_CONFIG_INVALID_MATERIAL.format(fieldName, value.toString().toUpperCase()));
+                        context.sendMessage(TL.COMMAND_CONFIG_INVALID_MATERIAL.format(fieldName, value.toUpperCase()));
                         return;
                     }
 
@@ -174,13 +291,13 @@ public class CmdConfig extends FCommand {
                     if (matSet.contains(newMat)) {
                         matSet.remove(newMat);
                         target.set(null, matSet);
-                        success = TL.COMMAND_CONFIG_MATERIAL_REMOVED.format(fieldName, value.toString().toUpperCase());
+                        success = TL.COMMAND_CONFIG_MATERIAL_REMOVED.format(fieldName, value.toUpperCase());
                     }
                     // Material not present yet, add it
                     else {
                         matSet.add(newMat);
                         target.set(null, matSet);
-                        success = TL.COMMAND_CONFIG_MATERIAL_ADDED.format(fieldName, value.toString().toUpperCase());
+                        success = TL.COMMAND_CONFIG_MATERIAL_ADDED.format(fieldName, value.toUpperCase());
                     }
                 }
 
@@ -189,16 +306,16 @@ public class CmdConfig extends FCommand {
                     @SuppressWarnings("unchecked") Set<String> stringSet = (Set<String>) target.get(null);
 
                     // String already present, so remove it
-                    if (stringSet.contains(value.toString())) {
-                        stringSet.remove(value.toString());
+                    if (stringSet.contains(value)) {
+                        stringSet.remove(value);
                         target.set(null, stringSet);
-                        success = TL.COMMAND_CONFIG_SET_REMOVED.format(fieldName, value.toString());
+                        success = TL.COMMAND_CONFIG_SET_REMOVED.format(fieldName, value);
                     }
                     // String not present yet, add it
                     else {
-                        stringSet.add(value.toString());
+                        stringSet.add(value);
                         target.set(null, stringSet);
-                        success = TL.COMMAND_CONFIG_SET_ADDED.format(fieldName, value.toString());
+                        success = TL.COMMAND_CONFIG_SET_ADDED.format(fieldName, value);
                     }
                 }
 
@@ -218,7 +335,7 @@ public class CmdConfig extends FCommand {
             context.sendMessage(TL.COMMAND_CONFIG_ERROR_MATCHING.format(fieldName));
             return;
         } catch (IllegalAccessException ex) {
-            context.sendMessage(TL.COMMAND_CONFIG_ERROR_SETTING.format(fieldName, value.toString()));
+            context.sendMessage(TL.COMMAND_CONFIG_ERROR_SETTING.format(fieldName, value));
             return;
         }
 
@@ -240,4 +357,30 @@ public class CmdConfig extends FCommand {
         return TL.COMMAND_CONFIG_DESCRIPTION;
     }
 
+    String getAsValidFieldName(String arg){
+        // store a lookup map of lowercase field names paired with proper capitalization field names
+        // that way, if the person using this command messes up the capitalization, we can fix that
+        if (properFieldNames.isEmpty()) {
+            Field[] fields = Conf.class.getDeclaredFields();
+            for (Field field : fields) {
+                properFieldNames.put(field.getName().toLowerCase(), field.getName());
+            }
+        }
+
+        String field = arg.toLowerCase();
+        if (field.startsWith("\"") && field.endsWith("\"")) {
+            field = field.substring(1, field.length() - 1);
+        }
+
+        return properFieldNames.get(field);
+    }
+
+    String concatArguments(List<String> args){
+        StringBuilder value = new StringBuilder(args.get(0));
+        // Begin at the 2nd arg since StringBuilder was initialized containing the 1st one already
+        for (int i = 1; i < args.size(); i++) {
+            value.append(' ').append(args.get(i));
+        }
+        return value.toString();
+    }
 }

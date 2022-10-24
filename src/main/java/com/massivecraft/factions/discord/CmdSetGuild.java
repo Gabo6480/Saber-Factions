@@ -3,6 +3,7 @@ package com.massivecraft.factions.discord;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
+import com.massivecraft.factions.cmd.Aliases;
 import com.massivecraft.factions.cmd.CommandContext;
 import com.massivecraft.factions.cmd.CommandRequirements;
 import com.massivecraft.factions.cmd.FCommand;
@@ -29,9 +30,9 @@ public class CmdSetGuild extends FCommand {
         super();
         this.eventWaiter = new EventWaiter();
         this.waiterAdded = false;
-        this.aliases.add("setguild");
+        this.aliases.addAll(Aliases.guild_set);
         this.optionalArgs.put("id", "none");
-        this.optionalArgs.put("faction", "you");
+        this.optionalArgs.put("faction", "yours");
 
         this.requirements = new CommandRequirements.Builder(Permission.SET_GUILD)
                 .playerOnly()

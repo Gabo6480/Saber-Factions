@@ -6,6 +6,8 @@ import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+
 public class CmdSetDiscord extends FCommand {
 
     /**
@@ -16,9 +18,12 @@ public class CmdSetDiscord extends FCommand {
         super();
         this.aliases.addAll(Aliases.discord_set);
 
+        this.requiredArgs.put("link",context -> new ArrayList<String>(){{
+            add("[<link>]");
+        }});
+
         this.optionalArgs.put("faction", "yours");
 
-        this.requiredArgs.add("link");
         this.requirements = new CommandRequirements.Builder(Permission.SETDISCORD)
                 .playerOnly()
                 .memberOnly()
@@ -33,7 +38,7 @@ public class CmdSetDiscord extends FCommand {
         }
         if (context.fPlayer.getRole() != Role.LEADER && !context.fPlayer.isAdminBypassing()) {
             //TODO: Create f perm for this
-            context.msg(TL.GENERIC_NOPERMISSION, "set your factions Discord!");
+            context.msg(TL.GENERIC_NOPERMISSION, TL.COMMAND_DISCORDSEE_TOSETYOUR.toString());
             return;
         }
 
@@ -56,7 +61,7 @@ public class CmdSetDiscord extends FCommand {
                     }
                 }
             } else {
-                context.msg(TL.GENERIC_NOPERMISSION, "set another factions discord link!");
+                context.msg(TL.GENERIC_NOPERMISSION, TL.COMMAND_DISCORDSEE_TOSETANOTHER.toString());
             }
         } else {
             context.msg(FactionsPlugin.getInstance().cmdBase.cmdSetDiscord.getUsageTemplate(context));

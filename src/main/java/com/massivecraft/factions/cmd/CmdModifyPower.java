@@ -3,11 +3,19 @@ package com.massivecraft.factions.cmd;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CmdModifyPower extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to modify target player's power by the given ammount
      */
 
     public CmdModifyPower() {
@@ -15,8 +23,29 @@ public class CmdModifyPower extends FCommand {
 
         this.aliases.addAll(Aliases.modifyPower);
 
-        this.requiredArgs.add("name");
-        this.requiredArgs.add("power");
+        this.requiredArgs.put("player", context -> Bukkit.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+        this.requiredArgs.put("power", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(1);
+            try {
+                // Just to check if it can be parsed into a double
+                Double.parseDouble(value);
+                if(!value.contains("."))
+                completions.add(value + ".");
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Double.parseDouble(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.MODIFY_POWER)
                 .build();

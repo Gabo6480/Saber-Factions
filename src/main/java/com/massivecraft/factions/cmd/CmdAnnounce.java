@@ -10,17 +10,21 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public class CmdAnnounce extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to send an announcement inside the sender's faction
      */
 
     public CmdAnnounce() {
         super();
         this.aliases.addAll(Aliases.announce);
 
-        this.requiredArgs.add("message");
+        this.requiredArgs.put("message", context -> new ArrayList<String>(){{add("[<message>]");}});
 
         this.requirements = new CommandRequirements.Builder(Permission.ANNOUNCE)
                 .playerOnly()

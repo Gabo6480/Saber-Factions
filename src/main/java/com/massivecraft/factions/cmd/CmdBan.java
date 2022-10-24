@@ -1,6 +1,7 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.audit.FLogType;
 import com.massivecraft.factions.event.FPlayerLeaveEvent;
@@ -12,17 +13,35 @@ import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CmdBan extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to ban a player from the sender's current faction
      */
 
     public CmdBan() {
         super();
         this.aliases.addAll(Aliases.ban_ban);
 
-        this.requiredArgs.add("target");
+        this.requiredArgs.put("player", context -> {
+            List<String> completions = new ArrayList<>();
+
+            for(FPlayer fPlayer : FPlayers.getInstance().getAllFPlayers()){
+                if(fPlayer == context.fPlayer
+                    || fPlayer.getFaction() == context.faction && fPlayer.getRole().value >= context.fPlayer.getRole().value
+                    || context.faction.isBanned(fPlayer))
+                    continue;
+
+                completions.add(fPlayer.getName());
+            }
+
+            return completions;
+        });
 
         this.requirements = new CommandRequirements.Builder(Permission.BAN)
                 .playerOnly()
@@ -49,11 +68,9 @@ public class CmdBan extends FCommand {
             return;
         }
 
-        for (BanInfo banInfo : context.faction.getBannedPlayers()) {
-            if (banInfo.getBanned().equals(target.getId())) {
-                context.msg(TL.COMMAND_BAN_ALREADYBANNED);
-                return;
-            }
+        if(context.faction.isBanned(target)){
+            context.msg(TL.COMMAND_BAN_ALREADYBANNED);
+            return;
         }
 
 

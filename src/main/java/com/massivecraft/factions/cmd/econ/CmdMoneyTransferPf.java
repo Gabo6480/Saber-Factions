@@ -1,6 +1,6 @@
 package com.massivecraft.factions.cmd.econ;
 
-import com.massivecraft.factions.Conf;
+import com.massivecraft.factions.*;
 import com.massivecraft.factions.cmd.Aliases;
 import com.massivecraft.factions.cmd.CommandContext;
 import com.massivecraft.factions.cmd.CommandRequirements;
@@ -11,19 +11,46 @@ import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 public class CmdMoneyTransferPf extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to transfer money from given player's account into the given faction's account
      */
 
     public CmdMoneyTransferPf() {
         this.aliases.addAll(Aliases.money_transfer_Pf);
 
-        this.requiredArgs.add("amount");
-        this.requiredArgs.add("player");
-        this.requiredArgs.add("faction");
+        this.requiredArgs.put("amount", context -> {
+            List<String> completions = new ArrayList<>();
+            String value = context.argAsString(0);
+            try{
+                // Just to check if it can be parsed into a double
+                Double.parseDouble(value);
+                if(!value.contains("."))
+                completions.add(value + ".");
+                for (int i = 0; i < 10; i++) {
+                    String completeInt = value + i;
+                    // Just to check if it can be parsed into a double
+                    Double.parseDouble(completeInt);
+                    completions.add(completeInt);
+                }
+            }
+            catch (Exception ignored){
+                if(completions.isEmpty())
+                    return null;
+            }
+            return completions;
+        });
+        this.requiredArgs.put("from player", context -> FPlayers.getInstance().getAllFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
+        this.requiredArgs.put("to faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
+
 
         this.requirements = new CommandRequirements.Builder(Permission.MONEY_P2F).build();
     }

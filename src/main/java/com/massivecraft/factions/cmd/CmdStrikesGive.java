@@ -1,19 +1,26 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CmdStrikesGive extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to increment the target faction's strike count by the given number
      */
 
     public CmdStrikesGive() {
         super();
         this.aliases.addAll(Aliases.strikes_give);
-        this.requiredArgs.add(0, "faction");
+        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
+        this.optionalArgs.put("amount","number");
 
         this.requirements = new CommandRequirements.Builder(Permission.SETSTRIKES)
                 .playerOnly()
@@ -27,7 +34,7 @@ public class CmdStrikesGive extends FCommand {
             context.msg(TL.COMMAND_STRIKES_TARGET_INVALID, context.argAsString(0));
             return;
         }
-        target.setStrikes(target.getStrikes() + 1);
+        target.setStrikes(target.getStrikes() + context.argAsInt(1, 1));
         context.msg(TL.COMMAND_STRIKES_CHANGED, target.getTag(), target.getStrikes());
     }
 

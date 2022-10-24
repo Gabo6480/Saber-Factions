@@ -15,17 +15,23 @@ import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 import mkremins.fanciful.FancyMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.stream.Collectors;
 
 public class CmdInviteAlt extends FCommand {
 
     /**
      * @author Driftay
+     *
+     * This command is used to invite a player as an alt account to the sender's current faction
      */
 
     public CmdInviteAlt() {
         super();
         this.aliases.addAll(Aliases.alts_invite);
-        this.requiredArgs.add("player name");
+        this.requiredArgs.put("player", context -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
 
         this.requirements = new CommandRequirements.Builder(Permission.INVITE)
                 .playerOnly()

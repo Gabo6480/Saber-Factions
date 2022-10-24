@@ -106,7 +106,7 @@ public class Aliases {
     public static ArrayList<String> list = new ArrayList<>(Arrays.asList("list", "ls"));
     public static ArrayList<String> lock = new ArrayList<>(Collections.singletonList("lock"));
     public static ArrayList<String> logins = new ArrayList<>(Arrays.asList("logins", "login", "logouts"));
-    public static ArrayList<String> lookup = new ArrayList<>(Collections.singletonList("lookup"));
+    public static ArrayList<String> lookup = new ArrayList<>(Arrays.asList("lookup", "where"));
     public static ArrayList<String> lowPower = new ArrayList<>(Collections.singletonList("lowpower"));
     public static ArrayList<String> map_map = new ArrayList<>(Collections.singletonList("map"));
     public static ArrayList<String> map_height = new ArrayList<>(Arrays.asList("mapheight", "mh"));
@@ -121,7 +121,7 @@ public class Aliases {
     public static ArrayList<String> peaceful = new ArrayList<>(Collections.singletonList("peaceful"));
     public static ArrayList<String> perm = new ArrayList<>(Arrays.asList("perm", "perms", "permission", "permissions"));
     public static ArrayList<String> permanent_faction = new ArrayList<>(Collections.singletonList("permanent"));
-    public static ArrayList<String> permanent_power = new ArrayList<>(Collections.singletonList("permanentpower"));
+    public static ArrayList<String> permanent_power = new ArrayList<>(Arrays.asList("permanentpower", "permpower"));
     public static ArrayList<String> titles = new ArrayList<>(Collections.singletonList("titles"));
     public static ArrayList<String> power_power = new ArrayList<>(Arrays.asList("pow", "power"));
     public static ArrayList<String> power_boost = new ArrayList<>(Collections.singletonList("powerboost"));
@@ -135,6 +135,7 @@ public class Aliases {
     public static ArrayList<String> seeChunk = new ArrayList<>(Arrays.asList("sc", "seechunk"));
     public static ArrayList<String> discord_see = new ArrayList<>(Collections.singletonList("seediscord"));
     public static ArrayList<String> discord_set = new ArrayList<>(Collections.singletonList("setdiscord"));
+    public static ArrayList<String> guild_set = new ArrayList<>(Collections.singletonList("setguild"));
     public static ArrayList<String> setBanner = new ArrayList<>(Collections.singletonList("setbanner"));
     public static ArrayList<String> setDefaultRole = new ArrayList<>(Arrays.asList("defaultrole", "def", "default", "defaultrank"));
     public static ArrayList<String> setWarp = new ArrayList<>(Arrays.asList("sw", "setwarp"));

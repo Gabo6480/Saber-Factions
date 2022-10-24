@@ -5,21 +5,46 @@ import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
+import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 public class CmdTop extends FCommand {
 
     /**
-     * @author FactionsUUID Team - Modified By CmdrKittens
+     * @author FactionsUUID Team - Modified By CmdrKittens - Further modified by Gabo6480
+     *
+     * This command is used to get a decending ordered list of all faction depending on the selected criteria
      */
 
     public CmdTop() {
         super();
         this.aliases.addAll(Aliases.top);
-        this.requiredArgs.add("criteria");
+        this.requiredArgs.put("criteria", context -> new ArrayList<String>(){{
+            add("members");
+            add("players");
+            add("start");
+            add("age");
+            add("power");
+            add("maxpower");
+            add("points");
+            add("kills");
+            add("deaths");
+            add("alts");
+            add("land");
+            add("claims");
+            add("online");
+            add("money");
+            add("balance");
+            add("bal");
+            add("allies");
+            add("enemies");
+            add("truces");
+            add("neutrals");
+        }});
         this.optionalArgs.put("page", "1");
 
         this.requirements = new CommandRequirements.Builder(Permission.TOP)
@@ -29,92 +54,141 @@ public class CmdTop extends FCommand {
 
     @Override
     public void perform(CommandContext context) {
-        // Can sort by: money, members, online, allies, enemies, power, land.
         // Get all Factions and remove non player ones.
         ArrayList<Faction> factionList = Factions.getInstance().getAllFactions();
         factionList.remove(Factions.getInstance().getWilderness());
         factionList.remove(Factions.getInstance().getSafeZone());
         factionList.remove(Factions.getInstance().getWarZone());
 
-        String criteria = context.argAsString(0);
+        String criteria = context.argAsString(0).toLowerCase();
+
+        Function<Faction, Number> getValue;
+        ValueType valueType;
 
         // TODO: Better way to sort?
-        if (criteria.equalsIgnoreCase("members")) {
-            factionList.sort((f1, f2) -> {
-                int f1Size = f1.getFPlayers().size();
-                int f2Size = f2.getFPlayers().size();
-                if (f1Size < f2Size) {
-                    return 1;
-                } else if (f1Size > f2Size) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else if (criteria.equalsIgnoreCase("start")) {
-            factionList.sort((f1, f2) -> {
-                long f1start = f1.getFoundedDate();
-                long f2start = f2.getFoundedDate();
-                // flip signs because a smaller date is farther in the past
-                if (f1start > f2start) {
-                    return 1;
-                } else if (f1start < f2start) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else if (criteria.equalsIgnoreCase("power")) {
-            factionList.sort((f1, f2) -> {
-                int f1Size = f1.getPowerRounded();
-                int f2Size = f2.getPowerRounded();
-                if (f1Size < f2Size) {
-                    return 1;
-                } else if (f1Size > f2Size) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else if (criteria.equalsIgnoreCase("land")) {
-            factionList.sort((f1, f2) -> {
-                int f1Size = f1.getLandRounded();
-                int f2Size = f2.getLandRounded();
-                if (f1Size < f2Size) {
-                    return 1;
-                } else if (f1Size > f2Size) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else if (criteria.equalsIgnoreCase("online")) {
-            factionList.sort((f1, f2) -> {
-                int f1Size = f1.getFPlayersWhereOnline(true).size();
-                int f2Size = f2.getFPlayersWhereOnline(true).size();
-                if (f1Size < f2Size) {
-                    return 1;
-                } else if (f1Size > f2Size) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else if (criteria.equalsIgnoreCase("money") || criteria.equalsIgnoreCase("balance") || criteria.equalsIgnoreCase("bal")) {
-            factionList.sort((f1, f2) -> {
-                double f1Size = f1.getFactionBalance();
-                // Lets get the balance of /all/ the players in the Faction.
-                for (FPlayer fp : f1.getFPlayers()) {
-                    f1Size = f1Size + Econ.getBalance(fp.getAccountId());
-                }
-                double f2Size = f2.getFactionBalance();
-                for (FPlayer fp : f2.getFPlayers()) {
-                    f2Size = f2Size + Econ.getBalance(fp.getAccountId());
-                }
-                if (f1Size < f2Size) {
-                    return 1;
-                } else if (f1Size > f2Size) {
-                    return -1;
-                }
-                return 0;
-            });
-        } else {
-            context.msg(TL.COMMAND_TOP_INVALID, criteria);
+        switch (criteria){
+            case "members":
+            case "players":
+            {
+                getValue = f -> f.getFPlayers().size();
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "start":
+            case "age":
+            {
+                getValue = Faction::getFoundedDate;
+                valueType = ValueType.TIMESTAMP;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "power":
+            {
+                getValue = Faction::getPower;
+                valueType = ValueType.DOUBLE;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "maxpower":
+            {
+                getValue = Faction::getPowerMax;
+                valueType = ValueType.DOUBLE;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "points":
+            {
+                getValue = Faction::getPoints;
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "kills":
+            {
+                getValue = Faction::getKills;
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "deaths":
+            {
+                getValue = Faction::getDeaths;
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "alts":
+            {
+                getValue = f -> f.getAltPlayers().size();
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "land":
+            case "claims":
+            {
+                getValue = Faction::getLandRounded;
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "online":
+            {
+                getValue = f -> f.getFPlayersWhereOnline(true).size();
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "money":
+            case "balance":
+            case "bal":
+            {
+                getValue = f -> {
+                    double bal = f.getFactionBalance();
+                    // Lets get the balance of /all/ the players in the Faction.
+                    for (FPlayer fp : f.getFPlayers()) {
+                        bal += Econ.getBalance(fp.getAccountId());
+                    }
+                    return bal;
+                };
+                valueType = ValueType.MONEY;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "allies":
+            {
+                getValue = f -> f.getRelationCount(Relation.ALLY);
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "enemies":
+            {
+                getValue = f -> f.getRelationCount(Relation.ENEMY);
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "truces":
+            {
+                getValue = f -> f.getRelationCount(Relation.TRUCE);
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            case "neutrals":
+            {
+                getValue = f -> f.getRelationCount(Relation.NEUTRAL);
+                valueType = ValueType.INTEGER;
+                factionList.sort((f1, f2) -> sortFaction(f1, f2, getValue));
+            }
+            break;
+            default:
+            {
+                context.msg(TL.COMMAND_TOP_INVALID, criteria);
+                return;
+            }
         }
 
         ArrayList<String> lines = new ArrayList<>();
@@ -139,35 +213,43 @@ public class CmdTop extends FCommand {
         for (Faction faction : factionList.subList(start, end)) {
             // Get the relation color if player is executing this.
             String fac = context.sender instanceof Player ? faction.getRelationTo(context.fPlayer).getColor() + faction.getTag() : faction.getTag();
-            lines.add(TL.COMMAND_TOP_LINE.format(rank, fac, getValue(faction, criteria)));
+            lines.add(TL.COMMAND_TOP_LINE.format(rank, fac, getValueString(faction, valueType, getValue)));
             rank++;
         }
 
         context.sendMessage(lines);
     }
 
-    private String getValue(Faction faction, String criteria) {
-        if (criteria.equalsIgnoreCase("online")) {
-            return String.valueOf(faction.getFPlayersWhereOnline(true).size());
-        } else if (criteria.equalsIgnoreCase("start")) {
-            return TL.sdf.format(faction.getFoundedDate());
-        } else if (criteria.equalsIgnoreCase("members")) {
-            return String.valueOf(faction.getFPlayers().size());
-        } else if (criteria.equalsIgnoreCase("land")) {
-            return String.valueOf(faction.getLandRounded());
-        } else if (criteria.equalsIgnoreCase("power")) {
-            return String.valueOf(faction.getPowerRounded());
-        } else { // Last one is balance, and it has 3 different things it could be.
-            double balance = faction.getFactionBalance();
-            for (FPlayer fp : faction.getFPlayers()) {
-                balance = Math.round(balance + Econ.getBalance(fp.getAccountId()));
-            }
-            return String.valueOf(balance);
+    private <N extends Number> int sortFaction(Faction f1, Faction f2, Function<Faction, N> getValue){
+        double f1Size = getValue.apply(f1).doubleValue();
+        double f2Size = getValue.apply(f2).doubleValue();
+        if (f1Size < f2Size) {
+            return 1;
+        } else if (f1Size > f2Size) {
+            return -1;
         }
+        return 0;
+    }
+
+    private String getValueString(Faction faction, ValueType valueType, Function<Faction, Number> getValue) {
+        switch (valueType){
+            case MONEY: return  "$" + String.format("%.2f",getValue.apply(faction).doubleValue());
+            case INTEGER: return String.valueOf(getValue.apply(faction));
+            case DOUBLE: return String.format("%.2f",getValue.apply(faction).doubleValue());
+            case TIMESTAMP: return TL.sdf.format(getValue.apply(faction).longValue());
+        }
+        return String.valueOf(getValue.apply(faction));
     }
 
     @Override
     public TL getUsageTranslation() {
         return TL.COMMAND_TOP_DESCRIPTION;
+    }
+
+    private enum ValueType {
+        INTEGER,
+        TIMESTAMP,
+        DOUBLE,
+        MONEY;
     }
 }

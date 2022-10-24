@@ -60,7 +60,7 @@ public class PermissableRelationFrame {
     private ItemStack buildAsset(String loc, String relation) {
         Permissable fromRelation = getPermissable(relation);
         // Since only two struct implement Permissible, using ternary operator to cast type is safe. By TwinkleStar03
-        String relationName = fromRelation instanceof Relation ? ((Relation) fromRelation).nicename : ((Role) fromRelation).nicename;
+        String relationName = fromRelation instanceof Relation ? ((Relation) fromRelation).displayName : ((Role) fromRelation).displayName;
         String nameCapitalized = relation.substring(0, 1).toUpperCase() + relation.substring(1);
         ItemStack item = XMaterial.matchXMaterial(FactionsPlugin.getInstance().getFileManager().getFperms().getConfig().getString(loc)).get().parseItem();
         ItemMeta meta = item.getItemMeta();

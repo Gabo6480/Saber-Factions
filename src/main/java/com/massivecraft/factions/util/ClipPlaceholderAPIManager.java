@@ -67,7 +67,7 @@ public class ClipPlaceholderAPIManager extends PlaceholderExpansion implements R
 
         switch (placeholder) {
             case "relation":
-                String relationName = fp1.getRelationTo(fp2).nicename;
+                String relationName = fp1.getRelationTo(fp2).displayName;
                 return relationName != null ? relationName : "";
             case "relation_color":
                 ChatColor color = fp1.getColorTo(fp2);

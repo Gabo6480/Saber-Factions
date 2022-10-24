@@ -1,26 +1,27 @@
 package com.massivecraft.factions.cmd;
 
-import com.massivecraft.factions.Conf;
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.*;
 import com.massivecraft.factions.cmd.audit.FLogType;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import com.massivecraft.factions.zcore.util.TextUtil;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
+
 public class CmdDescription extends FCommand {
 
     /**
      * @author FactionsUUID Team - Modified By CmdrKittens
+     *
+     * This command is used to add a description to the faction that the sender is currently part of
      */
 
     public CmdDescription() {
         super();
         this.aliases.addAll(Aliases.description);
 
-        this.requiredArgs.add("desc");
+        this.requiredArgs.put("desc", (context) -> new ArrayList<String>(){{add("[<description>]");}});
 
         this.requirements = new CommandRequirements.Builder(Permission.DESCRIPTION)
                 .playerOnly()

@@ -14,6 +14,9 @@ import org.bukkit.ChatColor;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public abstract class FCommand {
@@ -28,7 +31,7 @@ public abstract class FCommand {
     public List<String> aliases;
 
     // Information on the args
-    public List<String> requiredArgs;
+    public LinkedHashMap<String, Function<CommandContext, List<String>>> requiredArgs;
     public LinkedHashMap<String, String> optionalArgs;
 
     // Requirements to execute this command
@@ -51,7 +54,7 @@ public abstract class FCommand {
         this.subCommands = new ArrayList<>();
         this.aliases = new ArrayList<>();
 
-        this.requiredArgs = new ArrayList<>();
+        this.requiredArgs = new LinkedHashMap<>();
         this.optionalArgs = new LinkedHashMap<>();
 
         this.helpShort = null;
@@ -64,8 +67,9 @@ public abstract class FCommand {
     public void execute(CommandContext context) {
         // Is there a matching sub command?
         if (context.args.size() > 0) {
+            String firstArg = context.args.get(0).toLowerCase();
             for (FCommand subCommand : this.subCommands) {
-                if (subCommand.aliases.contains(context.args.get(0).toLowerCase())) {
+                if (subCommand.aliases.contains(firstArg)) {
                     context.args.remove(0);
                     context.commandChain.add(this);
                     subCommand.execute(context);
@@ -74,7 +78,7 @@ public abstract class FCommand {
             }
         }
 
-        if (!validCall(context)) {
+        if (!isValidCall(context)) {
             return;
         }
 
@@ -85,8 +89,64 @@ public abstract class FCommand {
         perform(context);
     }
 
-    public boolean validCall(CommandContext context) {
-        return requirements.computeRequirements(context, true) && validArgs(context);
+    public List<String> complete(CommandContext context){
+        List<String> completions = null;
+        int argCount = context.args.size();
+        if (argCount > 0) {
+            completions = new ArrayList<>();
+            String firstArg = context.args.get(0).toLowerCase();
+
+
+            if(firstArg.isEmpty()){
+                for (FCommand subCommand : this.subCommands) {
+                    if (subCommand.isVisible(context))
+                        completions.addAll(subCommand.aliases);
+                }
+            }
+            else if(argCount == 1) {
+                // Is there a matching sub command?
+                for (FCommand subCommand : this.subCommands) {
+                    // We check each alias to see if they match whatever is currently written
+                    for (String s : subCommand.aliases) {
+                        if (s.startsWith(firstArg)) {
+                            completions.addAll(subCommand.aliases);
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                // If there is at least 2 arguments, then check if there is an exactly matching subcommand and drill down into it
+                for (FCommand subCommand : this.subCommands) {
+                    if (subCommand.aliases.contains(firstArg)) {
+                        context.args.remove(0); // Remove this argument from the context
+
+                        return subCommand.complete(context);
+                    }
+                }
+            }
+
+            int currentArgIndex = argCount - 1;
+            // If there are no exactly matching subcommands, then we start processing the requiredArgs
+            if(argCount <= requiredArgs.size()){
+                if(context.argAsString(currentArgIndex).isEmpty()){
+                    String reqArgName = new ArrayList<>(requiredArgs.keySet()).get(currentArgIndex);
+
+                    if(reqArgName != null)
+                        completions.add("<" + reqArgName + ">");
+                }
+
+                List<String> result = new ArrayList<>(requiredArgs.values()).get(currentArgIndex).apply(context);
+                if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
+            }
+        }
+        if(completions == null || completions.isEmpty()) return null;
+
+        return completions;
+    }
+
+    public boolean isValidCall(CommandContext context) {
+        return requirements.computeRequirements(context, true) && areArgsValid(context);
     }
 
     public boolean isEnabled(CommandContext context) {
@@ -97,7 +157,12 @@ public abstract class FCommand {
         return true;
     }
 
-    public boolean validArgs(CommandContext context) {
+    public boolean isVisible(CommandContext context){
+        return (!this.requirements.playerOnly || context.player != null) && (this.requirements.permission == null || context.sender.hasPermission(this.requirements.permission.node))
+                && this.visibility != CommandVisibility.INVISIBLE;
+    }
+
+    public boolean areArgsValid(CommandContext context) {
         if (context.args.size() < this.requiredArgs.size()) {
             if (context.sender != null) {
                 context.msg(TL.GENERIC_ARGS_TOOFEW);
@@ -140,7 +205,7 @@ public abstract class FCommand {
     /*
         Common Logic
      */
-    public List<String> getToolTips(FPlayer player) {
+    public static List<String> getToolTips(FPlayer player) {
         List<String> lines = new ArrayList<>();
         for (String s : FactionsPlugin.getInstance().getConfig().getStringList("tooltips.show")) {
             lines.add(ChatColor.translateAlternateColorCodes('&', replaceFPlayerTags(s, player)));
@@ -148,7 +213,7 @@ public abstract class FCommand {
         return lines;
     }
 
-    public List<String> getToolTips(Faction faction) {
+    public static List<String> getToolTips(Faction faction) {
         List<String> lines = new ArrayList<>();
         for (String s : FactionsPlugin.getInstance().getConfig().getStringList("tooltips.list")) {
             lines.add(ChatColor.translateAlternateColorCodes('&', replaceFactionTags(s, faction)));
@@ -156,7 +221,7 @@ public abstract class FCommand {
         return lines;
     }
 
-    public String replaceFPlayerTags(String s, FPlayer player) {
+    public static String replaceFPlayerTags(String s, FPlayer player) {
         if (s.contains("{balance}")) {
             String balance = Econ.isSetup() ? Econ.getFriendlyBalance(player) : "no balance";
             s = s.replace("{balance}", balance);
@@ -177,7 +242,7 @@ public abstract class FCommand {
         return s;
     }
 
-    public String replaceFactionTags(String s, Faction faction) {
+    public static String replaceFactionTags(String s, Faction faction) {
         if (s.contains("{power}")) {
             s = s.replace("{power}", String.valueOf(faction.getPowerRounded()));
         }
@@ -204,7 +269,7 @@ public abstract class FCommand {
 
     /*
     Help and Usage information
- */
+    */
     public String getUsageTemplate(CommandContext context, boolean addShortHelp) {
         StringBuilder ret = new StringBuilder();
         ret.append(CC.translate(TL.COMMAND_USEAGE_TEMPLATE_COLOR.toString()));
@@ -219,7 +284,7 @@ public abstract class FCommand {
 
         List<String> args = new ArrayList<>();
 
-        for (String requiredArg : this.requiredArgs) {
+        for (String requiredArg : this.requiredArgs.keySet()) {
             args.add("<" + requiredArg + ">");
         }
 
