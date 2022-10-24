@@ -90,10 +90,9 @@ public abstract class FCommand {
     }
 
     public List<String> complete(CommandContext context){
-        List<String> completions = null;
+        List<String> completions = new ArrayList<>();
         int argCount = context.args.size();
         if (argCount > 0) {
-            completions = new ArrayList<>();
             String firstArg = context.args.get(0).toLowerCase();
 
 
@@ -140,8 +139,7 @@ public abstract class FCommand {
                 if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
             }
         }
-        if(completions == null || completions.isEmpty()) return null;
-
+        
         return completions;
     }
 
