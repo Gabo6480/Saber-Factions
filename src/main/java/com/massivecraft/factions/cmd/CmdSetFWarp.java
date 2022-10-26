@@ -4,6 +4,7 @@ import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Relation;
+import com.massivecraft.factions.struct.Warp;
 import com.massivecraft.factions.util.LazyLocation;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
@@ -28,8 +29,8 @@ public class CmdSetFWarp extends FCommand {
             return;
         }
 
-        String warp = context.argAsString(0);
-        boolean warpExists = context.faction.isWarp(warp);
+        String warpName = context.argAsString(0);
+        boolean warpExists = context.faction.isWarp(warpName);
         int maxWarps = context.faction.getWarpsLimit();
         boolean tooManyWarps = maxWarps <= context.faction.getWarps().size();
         if (tooManyWarps && !warpExists) {
@@ -40,12 +41,11 @@ public class CmdSetFWarp extends FCommand {
             return;
         }
         String password = context.argAsString(1);
-        LazyLocation loc = new LazyLocation(context.player.getLocation());
-        context.faction.setWarp(warp, loc);
+        Warp newWarp = context.faction.setWarp(warpName, context.player.getLocation());
         if (password != null) {
-            context.faction.setWarpPassword(warp, password);
+            newWarp.setPassword(password);
         }
-        context.msg(TL.COMMAND_SETFWARP_SET, warp, (password != null) ? password : "");
+        context.msg(TL.COMMAND_SETFWARP_SET, warpName, (password != null) ? password : "");
     }
 
     private boolean transact(FPlayer player, CommandContext context) {

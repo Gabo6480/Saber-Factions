@@ -5,6 +5,7 @@ import com.massivecraft.factions.discord.FactionChatHandler;
 import com.massivecraft.factions.struct.ChatMode;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.struct.Warp;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.util.WarmUpUtil;
 import com.massivecraft.factions.zcore.util.TL;
@@ -37,13 +38,13 @@ public class FactionsChatListener implements Listener {
         if (me.isEnteringPassword()) {
             event.setCancelled(true);
             me.sendMessage(ChatColor.DARK_GRAY + event.getMessage().replaceAll("(?s).", "*"));
-            if (me.getFaction().isWarpPassword(me.getEnteringWarp(), event.getMessage())) {
+            if (me.getEnteringWarp().isPassword(event.getMessage())) {
                 doWarmup(me.getEnteringWarp(), me);
             } else {
                 // Invalid Password
                 me.msg(TL.COMMAND_FWARP_INVALID_PASSWORD);
             }
-            me.setEnteringPassword(false, "");
+            me.setEnteringPassword(null);
             return;
         }
 
@@ -203,12 +204,12 @@ public class FactionsChatListener implements Listener {
         event.setFormat(nonColoredMsgFormat);
     }
 
-    private void doWarmup(final String warp, final FPlayer fme) {
-        WarmUpUtil.process(fme, WarmUpUtil.Warmup.WARP, TL.WARMUPS_NOTIFY_TELEPORT, warp, () -> {
+    private void doWarmup(final Warp warp, final FPlayer fme) {
+        WarmUpUtil.process(fme, WarmUpUtil.Warmup.WARP, TL.WARMUPS_NOTIFY_TELEPORT, warp.getName(), () -> {
             Player player = Bukkit.getPlayer(fme.getPlayer().getUniqueId());
             if (player != null) {
-                player.teleport(fme.getFaction().getWarp(warp).getLocation());
-                fme.msg(TL.COMMAND_FWARP_WARPED, warp);
+                player.teleport(warp.getLocation());
+                fme.msg(TL.COMMAND_FWARP_WARPED, warp.getName());
             }
         }, FactionsPlugin.getInstance().getConfig().getLong("warmups.f-warp", 10));
     }

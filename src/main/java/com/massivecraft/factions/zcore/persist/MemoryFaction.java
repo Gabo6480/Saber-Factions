@@ -10,10 +10,7 @@ import com.massivecraft.factions.iface.RelationParticipator;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.missions.Mission;
 import com.massivecraft.factions.scoreboards.FTeamWrapper;
-import com.massivecraft.factions.struct.BanInfo;
-import com.massivecraft.factions.struct.Permission;
-import com.massivecraft.factions.struct.Relation;
-import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.struct.*;
 import com.massivecraft.factions.util.*;
 import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.Permissable;
@@ -32,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public abstract class MemoryFaction implements Faction, EconomyParticipator {
     public HashMap<Integer, String> rules = new HashMap<>();
@@ -60,8 +58,9 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
     protected Set<String> invites = new HashSet<>();
     protected Set<String> altinvites = new HashSet<>();
     protected HashMap<String, List<String>> announcements = new HashMap<>();
-    protected ConcurrentHashMap<String, LazyLocation> warps = new ConcurrentHashMap<>();
-    protected ConcurrentHashMap<String, String> warpPasswords = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<String, Warp> warps;
+    //protected ConcurrentHashMap<String, LazyLocation> warps = new ConcurrentHashMap<>();
+    //protected ConcurrentHashMap<String, String> warpPasswords = new ConcurrentHashMap<>();
     protected int maxVaults;
     protected Role defaultRole;
     protected Map<Permissable, Map<PermissableAction, Access>> permissions = new HashMap<>();
@@ -255,16 +254,20 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
         announcements.remove(fPlayer.getId());
     }
 
-    public ConcurrentHashMap<String, LazyLocation> getWarps() {
-        return this.warps;
+    public List<Warp> getWarps() {
+        return new ArrayList<>(this.warps.values());
     }
 
-    public LazyLocation getWarp(String name) {
-        return this.warps.get(name);
+    public Warp getWarp(String name) {
+        return this.warps.get(name.toLowerCase());
     }
 
-    public void setWarp(String name, LazyLocation loc) {
-        this.warps.put(name, loc);
+    public Warp setWarp(String name, Location loc) {
+        name = name.toLowerCase();
+        Warp newWarp = new Warp(name, loc, this);
+        this.warps.put(name, newWarp);
+
+        return newWarp;
     }
 
     public boolean isWarp(String name) {
@@ -272,12 +275,32 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
     }
 
     public boolean removeWarp(String name) {
-        warpPasswords.remove(name); // remove password no matter what.
         return warps.remove(name) != null;
     }
 
-    public boolean isWarpPassword(String warp, String password) {
-        return hasWarpPassword(warp) && warpPasswords.get(warp.toLowerCase()).equals(password);
+    public void updateWarps(){
+        if(warps != null)
+        warps.forEach((name, warp) -> {
+            warp.setName(name);
+            warp.setFaction(this);
+        });
+    }
+
+    @Override
+    public int getWarpsLimit() {
+        if (warpLimit == 0) {
+            return FactionsPlugin.getInstance().getConfig().getInt("max-warps");
+        }
+        return warpLimit;
+    }
+
+    @Override
+    public void setWarpsLimit(int warpLimit) {
+        this.warpLimit = warpLimit;
+    }
+
+    public void clearWarps() {
+        warps.clear();
     }
 
     public String getDiscord() {
@@ -294,18 +317,6 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
 
     public void paypalSet(String paypal) {
         this.paypal = paypal;
-    }
-
-    public boolean hasWarpPassword(String warp) {
-        return warpPasswords.containsKey(warp.toLowerCase());
-    }
-
-    public void setWarpPassword(String warp, String password) {
-        warpPasswords.put(warp.toLowerCase(), password);
-    }
-
-    public void clearWarps() {
-        warps.clear();
     }
 
     public int getMaxVaults() {
@@ -545,20 +556,6 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
     @Override
     public void setBannerPattern(ItemStack banner) {
         bannerSerialized = banner.serialize();
-    }
-
-
-    @Override
-    public int getWarpsLimit() {
-        if (warpLimit == 0) {
-            return FactionsPlugin.getInstance().getConfig().getInt("max-warps");
-        }
-        return warpLimit;
-    }
-
-    @Override
-    public void setWarpsLimit(int warpLimit) {
-        this.warpLimit = warpLimit;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.massivecraft.factions.iface.RelationParticipator;
 import com.massivecraft.factions.struct.ChatMode;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.struct.Warp;
 import com.massivecraft.factions.util.WarmUpUtil;
 import mkremins.fanciful.FancyMessage;
 import net.dv8tion.jda.api.entities.User;
@@ -459,9 +460,9 @@ public interface FPlayer extends EconomyParticipator {
 
     boolean isEnteringPassword();
 
-    void setEnteringPassword(boolean toggle, String warp);
+    void setEnteringPassword(Warp warp);
 
-    String getEnteringWarp();
+    Warp getEnteringWarp();
 
     void checkIfNearbyEnemies();
 

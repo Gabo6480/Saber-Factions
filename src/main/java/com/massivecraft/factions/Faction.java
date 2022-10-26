@@ -7,6 +7,7 @@ import com.massivecraft.factions.missions.Mission;
 import com.massivecraft.factions.struct.BanInfo;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.struct.Warp;
 import com.massivecraft.factions.util.FastChunk;
 import com.massivecraft.factions.util.LazyLocation;
 import com.massivecraft.factions.zcore.fperms.Access;
@@ -132,19 +133,13 @@ public interface Faction extends EconomyParticipator {
 
     HashMap<String, List<String>> getAnnouncements();
 
-    ConcurrentHashMap<String, LazyLocation> getWarps();
+    List<Warp> getWarps();
 
-    LazyLocation getWarp(String name);
+    Warp getWarp(String name);
 
-    void setWarp(String name, LazyLocation loc);
+    Warp setWarp(String name, Location loc);
 
     boolean isWarp(String name);
-
-    boolean hasWarpPassword(String warp);
-
-    boolean isWarpPassword(String warp, String password);
-
-    void setWarpPassword(String warp, String password);
 
     boolean removeWarp(String name);
 

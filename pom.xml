@@ -4,7 +4,7 @@
 
     <groupId>com.massivecraft</groupId>
     <artifactId>Factions</artifactId>
-    <version>1.6.9.5-2.9.8-RC</version>
+    <version>1.6.9.5-2.4.1-RC</version>
     <packaging>jar</packaging>
 
     <name>SaberFactions</name>
@@ -25,120 +25,120 @@
                 <directory>src/main/resources/</directory>
             </resource>
         </resources>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <configuration>
-                        <createDependencyReducedPom>false</createDependencyReducedPom>
-                        <relocations>
-                            <relocation>
-                                <pattern>me.lucko.helper</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.me.lucko.helper</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>com.github.cryptomorin</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.xseries</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>com.github.stefvanschie.inventoryframework</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.stefvanschie.inventoryframework
-                                </shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>org.bstats</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.org.bstats</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>net.dv8tion</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.net.dv8tion</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>xyz.xenondevs</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.particlelib</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>mkremins.fanciful</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.mkremins.fanciful</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>com.google.gson</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.com.google.gson</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>com.darkblade12</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.com.darkblade12</shadedPattern>
-                            </relocation>
-                            <relocation>
-                                <pattern>de.tr7zw</pattern>
-                                <shadedPattern>com.massivecraft.factions.shade.nbtapi</shadedPattern>
-                            </relocation>
-                        </relocations>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>shade</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <finalName>SaberFactions</finalName>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-            </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <relocations>
+                        <relocation>
+                            <pattern>me.lucko.helper</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.me.lucko.helper</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.cryptomorin.xseries</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.xseries</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.stefvanschie.inventoryframework</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.stefvanschie.inventoryframework</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.org.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.dv8tion</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.net.dv8tion</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>xyz.xenondevs</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.particlelib</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>mkremins.fanciful</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.mkremins.fanciful</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.com.google.gson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.darkblade12</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.com.darkblade12</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.tr7zw</pattern>
+                            <shadedPattern>com.massivecraft.factions.shade.nbtapi</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <finalName>SaberFactions</finalName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.1</version>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>
         <dependency>
             <groupId>xyz.xenondevs</groupId>
             <artifactId>particle</artifactId>
-            <version>1.6.6</version>
+            <version>1.7.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api-plugin</artifactId>
-            <version>2.8.0</version>
+            <version>2.10.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>me.lucko</groupId>
             <artifactId>commodore</artifactId>
-            <version>1.3</version>
+            <version>2.2</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.mojang</groupId>
             <artifactId>brigadier</artifactId>
             <version>1.0.14</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>8.2.0</version>
+            <version>9.1.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>mcMMO</groupId>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>me.lucko</groupId>
             <artifactId>helper</artifactId>
-            <version>5.6.5</version>
+            <version>5.6.13</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -302,13 +302,13 @@
         <dependency>
             <groupId>club.minnced</groupId>
             <artifactId>discord-webhooks</artifactId>
-            <version>0.5.0</version>
+            <version>0.8.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>LATEST</version>
+            <version>4.2.0_197</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -382,7 +382,7 @@
         <dependency>
             <groupId>com.bgsoftware</groupId>
             <artifactId>WildStackerAPI</artifactId>
-            <version>latest</version>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -418,8 +418,8 @@
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>gson</artifactId>
-                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>*</artifactId>
+                    <groupId>shaded</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -462,7 +462,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>31.1-jre</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -474,7 +474,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.5</version>
+            <version>2.9.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -507,30 +507,36 @@
             <artifactId>authlib</artifactId>
             <version>1.5.21</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
             <artifactId>jda-utilities</artifactId>
-            <version>LATEST</version>
+            <version>3.0.5</version>
             <scope>compile</scope>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <repositories>
         <repository>
-            <id>rosewood-repo</id>
-            <url>https://repo.rosewooddev.io/repository/public/</url>
-        </repository>
-        <repository>
             <id>bg-repo</id>
             <url>https://repo.bg-software.com/repository/api/</url>
+        </repository>
+        <repository>
+            <id>rosewood-repo</id>
+            <url>https://repo.rosewooddev.io/repository/public/</url>
         </repository>
         <repository>
             <id>CodeMC</id>
@@ -544,7 +550,7 @@
         <repository>
             <id>central</id>
             <name>bintray</name>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
         <repository>
             <id>mojang-repo</id>
@@ -552,11 +558,11 @@
         </repository>
         <repository>
             <id>net.coreprotect</id>
-            <url>http://maven.playpro.com/</url>
+            <url>https://maven.playpro.com/</url>
         </repository>
         <repository>
             <id>ess-repo</id>
-            <url>http://ci.ender.zone/plugin/repository/everything/</url>
+            <url>https://ci.ender.zone/plugin/repository/everything/</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
@@ -567,8 +573,8 @@
             <url>https://cdn.rawgit.com/Rayzr522/maven-repo/master/</url>
         </repository>
         <repository>
-            <id>maven.sk89q.com</id>
-            <url>http://maven.sk89q.com/repo/</url>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
         </repository>
         <repository>
             <id>jcenter</id>
@@ -577,16 +583,16 @@
         </repository>
         <repository>
             <id>repo.mikeprimm.com</id>
-            <url>http://repo.mikeprimm.com/</url>
+            <url>https://repo.mikeprimm.com/</url>
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
             <id>mvdw-software</id>
             <name>MVdW Public Repositories</name>
-            <url>http://repo.mvdw-software.be/content/groups/public/</url>
+            <url>https://repo.mvdw-software.be/content/groups/public/</url>
         </repository>
         <repository>
             <id>papermc</id>
@@ -600,6 +606,11 @@
             <id>minecraft-libraries</id>
             <name>Minecraft Libraries</name>
             <url>https://libraries.minecraft.net</url>
+        </repository>
+        <repository>
+            <id>maven_central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
     </repositories>
 

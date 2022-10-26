@@ -81,8 +81,9 @@ public class JSONFactions extends MemoryFactions {
         int needsUpdate = 0;
         for (Entry<String, JSONFaction> entry : data.entrySet()) {
             String id = entry.getKey();
-            Faction f = entry.getValue();
+            MemoryFaction f = entry.getValue();
             f.checkPerms();
+            f.updateWarps();
             f.setId(id);
             this.updateNextIdForId(id);
             needsUpdate += whichKeysNeedMigration(f.getInvites()).size();
