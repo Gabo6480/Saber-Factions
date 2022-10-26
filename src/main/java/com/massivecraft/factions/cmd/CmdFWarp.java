@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.struct.Permission;
+import com.massivecraft.factions.struct.Warp;
 import com.massivecraft.factions.util.WarmUpUtil;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.frame.fwarps.FactionWarpsFrame;
@@ -46,10 +47,12 @@ public class CmdFWarp extends FCommand {
             final String warpName = context.argAsString(0);
             final String passwordAttempt = context.argAsString(1);
 
-            if (context.faction.isWarp(context.argAsString(0))) {
+            if (context.faction.isWarp(warpName)) {
+
+                Warp warp = context.faction.getWarp(warpName);
 
                 // Check if requires password and if so, check if valid. CASE SENSITIVE
-                if (context.faction.hasWarpPassword(warpName) && !context.faction.isWarpPassword(warpName, passwordAttempt)) {
+                if (warp.hasPassword() && !warp.isPassword(passwordAttempt)) {
                     context.faction.msg(TL.COMMAND_FWARP_INVALID_PASSWORD);
                     return;
                 }
@@ -62,7 +65,7 @@ public class CmdFWarp extends FCommand {
                 context.doWarmUp(WarmUpUtil.Warmup.WARP, TL.WARMUPS_NOTIFY_TELEPORT, warpName, () -> {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) {
-                        player.teleport(fPlayer.getFaction().getWarp(warpName).getLocation());
+                        player.teleport(warp.getLocation());
                         fPlayer.msg(TL.COMMAND_FWARP_WARPED, warpName);
                     }
                 }, FactionsPlugin.getInstance().getConfig().getLong("warmups.f-warp", 10));

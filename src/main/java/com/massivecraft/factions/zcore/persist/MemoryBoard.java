@@ -58,7 +58,7 @@ public abstract class MemoryBoard extends Board {
 
     public void removeAt(FLocation flocation) {
         Faction faction = getFactionAt(flocation);
-        faction.getWarps().values().removeIf(lazyLocation -> flocation.isInChunk(lazyLocation.getLocation()));
+        faction.getWarps().removeIf(warp -> flocation.isInChunk(warp.getLocation()));
         for (Entity entity : flocation.getChunk().getEntities()) {
             if (entity instanceof Player) {
                 FPlayer fPlayer = FPlayers.getInstance().getByPlayer((Player) entity);

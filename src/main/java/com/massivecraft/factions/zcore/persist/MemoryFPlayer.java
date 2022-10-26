@@ -12,10 +12,7 @@ import com.massivecraft.factions.integration.Essentials;
 import com.massivecraft.factions.integration.Worldguard;
 import com.massivecraft.factions.scoreboards.FScoreboard;
 import com.massivecraft.factions.scoreboards.sidebar.FInfoSidebar;
-import com.massivecraft.factions.struct.ChatMode;
-import com.massivecraft.factions.struct.Permission;
-import com.massivecraft.factions.struct.Relation;
-import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.struct.*;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.util.RelationUtil;
@@ -78,8 +75,7 @@ public abstract class MemoryFPlayer implements FPlayer {
     protected boolean isFlying = false;
     protected boolean isAutoFlying = false;
     protected boolean isAlt;
-    protected boolean enteringPassword = false;
-    protected String enteringPasswordWarp = "";
+    protected transient Warp enteringPasswordWarp = null;
     protected transient FLocation lastStoodAt = new FLocation(); // Where did this player stand the last time we checked?
     protected transient boolean mapAutoUpdating;
     protected transient Faction autoClaimFor;
@@ -1119,11 +1115,10 @@ public abstract class MemoryFPlayer implements FPlayer {
 
 
     public boolean isEnteringPassword() {
-        return enteringPassword;
+        return enteringPasswordWarp != null;
     }
 
-    public void setEnteringPassword(boolean toggle, String warp) {
-        enteringPassword = toggle;
+    public void setEnteringPassword(Warp warp) {
         enteringPasswordWarp = warp;
     }
 
@@ -1131,7 +1126,7 @@ public abstract class MemoryFPlayer implements FPlayer {
     // Message Sending Helpers
     // -------------------------------------------- //
 
-    public String getEnteringWarp() {
+    public Warp getEnteringWarp() {
         return enteringPasswordWarp;
     }
 
