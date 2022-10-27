@@ -9,6 +9,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.AllFPlayerArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.FactionMemberArgumentProvider;
 import com.massivecraft.factions.event.FPlayerLeaveEvent;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
@@ -30,7 +32,11 @@ public class CmdKick extends FCommand {
     public CmdKick() {
         super();
         this.aliases.addAll(Aliases.kick);
-        this.optionalArgs.put("player name", "player name");
+        this.optionalArgs.add(new FactionMemberArgumentProvider((fPlayer, context) -> !(fPlayer == context.fPlayer
+                || !context.fPlayer.isAdminBypassing() && (
+                        fPlayer.getRole().value >= context.fPlayer.getRole().value
+                        || !Conf.canLeaveWithNegativePower && fPlayer.getPower() < 0)
+        )));
 
         this.requirements = new CommandRequirements.Builder(Permission.KICK)
                 .playerOnly()
@@ -73,12 +79,12 @@ public class CmdKick extends FCommand {
             return;
         }
 
-        Faction toKickFaction = toKick.getFaction();
-
-        if (toKickFaction.isWilderness()) {
+        if (toKick.hasFaction()) {
             context.sender.sendMessage(TL.COMMAND_KICK_NONE.toString());
             return;
         }
+
+        Faction toKickFaction = toKick.getFaction();
 
         // This permission check has been cleaned to be more understandable and logical
         // Unless is admin,

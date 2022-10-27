@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -17,7 +18,7 @@ public class CmdStrikesInfo extends FCommand {
     public CmdStrikesInfo() {
         super();
         this.aliases.addAll(Aliases.strikes_info);
-        this.optionalArgs.put("target", "faction");
+        this.optionalArgs.add(new FactionTagArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.SETSTRIKES)
                 .playerOnly()

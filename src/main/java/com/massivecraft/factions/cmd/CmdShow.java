@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import com.massivecraft.factions.zcore.util.TagReplacer;
@@ -45,7 +46,7 @@ public class CmdShow extends FCommand {
         defaults.add("&8&m----------------------------------------");
 
         // this.requiredArgs.add("");
-        this.optionalArgs.put("faction tag", "yours");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.SHOW).build();
     }

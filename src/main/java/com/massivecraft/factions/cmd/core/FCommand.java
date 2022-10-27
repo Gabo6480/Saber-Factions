@@ -4,6 +4,7 @@ import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.core.args.ArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.OptionalArgumentProvider;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.CommandVisibility;
@@ -32,7 +33,7 @@ public abstract class FCommand {
 
     // Information on the args
     public LinkedList<ArgumentProvider> requiredArgs;
-    public LinkedHashMap<String, String> optionalArgs;
+    public LinkedList<OptionalArgumentProvider> optionalArgs;
 
     // Requirements to execute this command
     public CommandRequirements requirements;
@@ -55,7 +56,7 @@ public abstract class FCommand {
         this.aliases = new ArrayList<>();
 
         this.requiredArgs = new LinkedList<>();
-        this.optionalArgs = new LinkedHashMap<>();
+        this.optionalArgs = new LinkedList<>();
 
         this.helpShort = null;
         this.helpLong = new ArrayList<>();
@@ -131,11 +132,24 @@ public abstract class FCommand {
                 if(context.argAsString(currentArgIndex).isEmpty()){
                     String reqArgName = requiredArgs.get(currentArgIndex).getName();
 
-                    if(reqArgName != null)
-                        completions.add("<" + reqArgName + ">");
+                    completions.add("<" + reqArgName + ">");
                 }
 
                 List<String> result = requiredArgs.get(currentArgIndex).getCompletions(context, currentArgIndex);
+                if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
+            }
+            else if(argCount <= requiredArgs.size() + optionalArgs.size()){
+                if(context.argAsString(currentArgIndex).isEmpty()){
+                    String optionalArgName = optionalArgs.get(currentArgIndex).getName();
+                    String optionalArgDefault = optionalArgs.get(currentArgIndex).getDefaultValue();
+
+                    if(optionalArgDefault != null)
+                        optionalArgName += "=" + optionalArgDefault;
+
+                    completions.add("[" + optionalArgName + "]");
+                }
+
+                List<String> result = optionalArgs.get(currentArgIndex).getCompletions(context, currentArgIndex);
                 if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
             }
         }
@@ -286,14 +300,14 @@ public abstract class FCommand {
             args.add("<" + requiredArg.getName() + ">");
         }
 
-        for (Map.Entry<String, String> optionalArg : this.optionalArgs.entrySet()) {
-            String val = optionalArg.getValue();
-            if (val == null) {
+        for (OptionalArgumentProvider optionalArg : this.optionalArgs) {
+            String val = optionalArg.getDefaultValue();
+            if (val == null || val.isEmpty()) {
                 val = "";
             } else {
                 val = "=" + val;
             }
-            args.add("[" + optionalArg.getKey() + val + "]");
+            args.add("[" + optionalArg.getName() + val + "]");
         }
 
         if (args.size() > 0) {

@@ -14,6 +14,10 @@ public class IntegerArgumentProvider extends NumberArgumentProvider<Integer> {
         super(name, null, Integer::parseInt, numberFilter);
     }
 
+    public IntegerArgumentProvider(String name, Integer defaultValue ) {
+        super(name, defaultValue, Integer::parseInt, (i, ctx) -> true);
+    }
+
     public IntegerArgumentProvider(String name) {
         super(name, null, Integer::parseInt, (num, ctx) -> true);
     }

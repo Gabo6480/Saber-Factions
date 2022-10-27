@@ -7,6 +7,8 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
@@ -24,17 +26,21 @@ public class CmdTnt extends FCommand {
      * This command is used to manage the sender's faction tnt bank
      */
 
+    CmdTntAddAll cmdTntAddAll = new CmdTntAddAll();
+
     public CmdTnt() {
         super();
         this.aliases.addAll(Aliases.tnt_tnt);
-        this.optionalArgs.put("add/take/addall", "");
-        this.optionalArgs.put("amount", "number");
+        this.optionalArgs.add(new ListStringArgumentProvider("add/take", null, "add", "take"));
+        this.optionalArgs.add(new IntegerArgumentProvider("amount", ((integer, context) -> integer > 0)));
 
         this.requirements = new CommandRequirements.Builder(Permission.TNT)
                 .playerOnly()
                 .memberOnly()
                 .withAction(PermissableAction.TNTBANK)
                 .build();
+
+        this.addSubCommand(cmdTntAddAll);
     }
 
     public static void removeItems(Inventory inventory, ItemStack item, int toRemove) {
@@ -143,36 +149,8 @@ public class CmdTnt extends FCommand {
                 context.msg(TL.COMMAND_TNT_WIDTHDRAW_SUCCESS);
                 FactionsPlugin.instance.getFlogManager().log(context.faction, FLogType.F_TNT, context.fPlayer.getName(), "WITHDREW", amount + "x TNT");
             }
-        } else if (context.args.size() == 1) {
-            if (context.args.get(0).equalsIgnoreCase("addall")) {
-                Inventory inv = context.player.getInventory();
-                int invTnt = 0;
-                for (int i = 0; i <= inv.getSize(); i++) {
-                    if (inv.getItem(i) == null) {
-                        continue;
-                    }
-                    if (inv.getItem(i).getType() == Material.TNT) {
-                        invTnt += inv.getItem(i).getAmount();
-                    }
-                }
-                if (invTnt <= 0) {
-                    context.msg(TL.COMMAND_TNT_DEPOSIT_NOTENOUGH);
-                    return;
-                }
-                if (context.faction.getTnt() + invTnt > context.faction.getTntBankLimit()) {
-                    context.msg(TL.COMMAND_TNT_EXCEEDLIMIT);
-                    return;
-                }
-                removeItems(context.player.getInventory(), new ItemStack(Material.TNT), invTnt);
-                context.player.updateInventory();
-                context.faction.addTnt(invTnt);
-                context.msg(TL.COMMAND_TNT_DEPOSIT_SUCCESS);
-                FactionsPlugin.instance.getFlogManager().log(context.faction, FLogType.F_TNT, context.fPlayer.getName(), "DEPOSITED", invTnt + "x TNT");
-
-                context.fPlayer.sendMessage(CC.translate(TL.COMMAND_TNT_AMOUNT.toString().replace("{amount}", context.faction.getTnt() + "").replace("{maxAmount}", context.faction.getTntBankLimit() + "")));
-                return;
-
-            }
+        }
+        else if (context.args.size() == 1) {
             context.msg(TL.GENERIC_ARGS_TOOFEW);
             context.msg(context.args.get(0).equalsIgnoreCase("take") || context.args.get(0).equalsIgnoreCase("t") ? TL.COMMAND_TNT_TAKE_DESCRIPTION : TL.COMMAND_TNT_ADD_DESCRIPTION);
         }

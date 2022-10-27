@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -44,7 +45,7 @@ public class CmdStrikesTake extends FCommand {
 
             return completions;
         });*/
-        this.optionalArgs.put("amount","number");
+        this.optionalArgs.add(new IntegerArgumentProvider("amount"));
 
         this.requirements = new CommandRequirements.Builder(Permission.SETSTRIKES)
                 .playerOnly()

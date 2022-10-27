@@ -13,6 +13,10 @@ public class FactionMemberArgumentProvider extends AbstractArgumentProvider<FPla
         this("member",null, (p, ctx) -> true);
     }
 
+    public FactionMemberArgumentProvider(@NotNull String name, String defaultValue){
+        this(name,defaultValue,(p, ctx) -> true);
+    }
+
     public FactionMemberArgumentProvider(@NotNull String name){
         this(name,null,(p, ctx) -> true);
     }

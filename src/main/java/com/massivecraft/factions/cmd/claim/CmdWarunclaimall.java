@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.WorldArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
@@ -22,7 +23,7 @@ public class CmdWarunclaimall extends FCommand {
 
     public CmdWarunclaimall() {
         this.aliases.addAll(Aliases.unclaim_all_war);
-        this.optionalArgs.put("world", "all");
+        this.optionalArgs.add(new WorldArgumentProvider("world", "all"));
 
         this.requirements = new CommandRequirements.Builder(Permission.MANAGE_WAR_ZONE)
                 .build();

@@ -8,6 +8,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.event.LandUnclaimEvent;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
@@ -29,8 +31,8 @@ public class CmdUnclaim extends FCommand {
     public CmdUnclaim() {
         this.aliases.addAll(Aliases.unclaim_unclaim);
 
-        this.optionalArgs.put("radius", "1");
-        this.optionalArgs.put("faction", "yours");
+        this.optionalArgs.add(new IntegerArgumentProvider("radius", 1, ((integer, context) -> integer > 0)));
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.UNCLAIM)
                 .playerOnly()

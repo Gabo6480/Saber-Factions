@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.event.LandUnclaimAllEvent;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
@@ -25,7 +26,7 @@ public class CmdUnclaimall extends FCommand {
     public CmdUnclaimall() {
         this.aliases.addAll(Aliases.unclaim_all_unsafe);
 
-        this.optionalArgs.put("faction", "yours");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.UNCLAIM_ALL)
                 .playerOnly()

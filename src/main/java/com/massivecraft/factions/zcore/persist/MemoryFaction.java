@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public abstract class MemoryFaction implements Faction, EconomyParticipator {
-    public HashMap<Integer, String> rules = new HashMap<>();
+    public LinkedList<String> rules = new LinkedList<>();
     public int tnt;
     public Location checkpoint;
     public LazyLocation vault;
@@ -470,17 +470,17 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
         return rules.get(index);
     }
 
-    public HashMap<Integer, String> getRulesMap() {
+    public LinkedList<String> getRules() {
         return rules;
     }
 
     public void setRule(int index, String rule) {
-        rules.put(index, rule);
+        rules.set(index, rule);
     }
 
     public void removeRule(int index) {
-        HashMap<Integer, String> newRule = rules;
-        newRule.remove(index);
+        if (index >= rules.size()) return;
+        rules.remove(index);
     }
 
     public void addTnt(int amt) {
@@ -722,7 +722,7 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
     }
 
     public void addRule(String rule) {
-        rules.put(rules.size(), rule);
+        rules.add(rule);
     }
 
     public boolean getOpen() {

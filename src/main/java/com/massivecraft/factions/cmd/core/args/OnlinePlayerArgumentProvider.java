@@ -25,6 +25,10 @@ public class OnlinePlayerArgumentProvider extends AbstractArgumentProvider<Playe
         super(name,null,(p, ctx) -> true);
     }
 
+    public OnlinePlayerArgumentProvider(@NotNull String name, String defaultValue){
+        super(name,defaultValue,(p, ctx) -> true);
+    }
+
     public OnlinePlayerArgumentProvider(BiFunction<Player, CommandContext, Boolean> playerFilter){
         super("player",null, playerFilter);
     }

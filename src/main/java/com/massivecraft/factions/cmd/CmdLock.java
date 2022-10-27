@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnOffArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -23,7 +24,7 @@ public class CmdLock extends FCommand {
     public CmdLock() {
         super();
         this.aliases.addAll(Aliases.lock);
-        this.optionalArgs.put("on/off", "flip");
+        this.optionalArgs.add(new OnOffArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.LOCK)
                 .noDisableOnLock()

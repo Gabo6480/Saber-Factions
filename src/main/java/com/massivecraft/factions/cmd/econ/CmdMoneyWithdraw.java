@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.cmd.core.args.number.DoubleArgumentProvider;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
@@ -34,7 +35,7 @@ public class CmdMoneyWithdraw extends FCommand {
         this.aliases.addAll(Aliases.money_withdraw);
 
         this.requiredArgs.add(new DoubleArgumentProvider("amount", (number, context) -> number > 0));
-        this.optionalArgs.put("faction", "yours");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.MONEY_F2P)
                 .playerOnly()

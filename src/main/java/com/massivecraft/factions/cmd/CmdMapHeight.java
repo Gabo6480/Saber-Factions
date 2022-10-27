@@ -1,9 +1,11 @@
 package com.massivecraft.factions.cmd;
 
+import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -17,7 +19,7 @@ public class CmdMapHeight extends FCommand {
         super();
 
         this.aliases.addAll(Aliases.map_height);
-        this.optionalArgs.put("height", "height");
+        this.optionalArgs.add(new IntegerArgumentProvider("height", ((integer, context) -> integer >= 1 && integer <= Conf.mapHeight * 2)));
 
         this.requirements = new CommandRequirements.Builder(Permission.MAPHEIGHT)
                 .playerOnly()

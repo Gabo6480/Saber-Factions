@@ -6,6 +6,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionWarpArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Warp;
 import com.massivecraft.factions.util.WarmUpUtil;
@@ -26,8 +28,8 @@ public class CmdFWarp extends FCommand {
     public CmdFWarp() {
         super();
         this.aliases.addAll(Aliases.warp);
-        this.optionalArgs.put("warpname", "warpname");
-        this.optionalArgs.put("password", "password");
+        this.optionalArgs.add(new FactionWarpArgumentProvider());
+        this.optionalArgs.add(new SingleWordArgumentProvider("password"));
 
         this.requirements = new CommandRequirements.Builder(Permission.WARP)
                 .playerOnly()

@@ -20,6 +20,7 @@ import com.massivecraft.factions.cmd.relational.CmdRelationTruce;
 import com.massivecraft.factions.cmd.reserve.CmdReserve;
 import com.massivecraft.factions.cmd.roles.CmdDemote;
 import com.massivecraft.factions.cmd.roles.CmdPromote;
+import com.massivecraft.factions.cmd.rules.CmdRules;
 import com.massivecraft.factions.cmd.tnt.CmdSetTnt;
 import com.massivecraft.factions.cmd.tnt.CmdTnt;
 import com.massivecraft.factions.cmd.tnt.CmdTntFill;

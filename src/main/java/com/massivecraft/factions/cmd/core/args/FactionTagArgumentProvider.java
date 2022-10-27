@@ -30,6 +30,10 @@ public class FactionTagArgumentProvider extends AbstractArgumentProvider<Faction
         super(name, defaultValue, filter);
     }
 
+    public FactionTagArgumentProvider(@NotNull String name, String defaultValue) {
+        super(name, defaultValue, (s, ctx) -> true);
+    }
+
     public FactionTagArgumentProvider(@NotNull String name, BiFunction<Faction, CommandContext, Boolean> filter) {
         super(name, null, filter);
     }

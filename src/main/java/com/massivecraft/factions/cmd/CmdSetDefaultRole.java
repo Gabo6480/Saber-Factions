@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.core.args.CustomArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.EnumArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
@@ -23,9 +24,7 @@ public class CmdSetDefaultRole extends FCommand {
         super();
 
         this.aliases.addAll(Aliases.setDefaultRole);
-        this.requiredArgs.add(new CustomArgumentProvider<>("role", null,
-                (context, integer) -> Arrays.asList(Role.values()), Role::name,
-                (role, context) -> role != Role.LEADER));
+        this.requiredArgs.add(new EnumArgumentProvider<>(Role.class, "role", null, (role, context) -> role != Role.LEADER));
 
         this.requirements = new CommandRequirements.Builder(Permission.DEFAULTRANK)
                 .playerOnly()

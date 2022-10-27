@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
@@ -18,7 +19,7 @@ public class CmdSethome extends FCommand {
 
     public CmdSethome() {
         this.aliases.addAll(Aliases.setHome);
-        this.optionalArgs.put("faction tag", "mine");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.SETHOME)
                 .playerOnly()

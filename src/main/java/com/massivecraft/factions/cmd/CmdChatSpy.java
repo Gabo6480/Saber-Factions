@@ -4,6 +4,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnOffArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
@@ -18,7 +19,7 @@ public class CmdChatSpy extends FCommand {
         super();
         this.aliases.addAll(Aliases.chatspy);
 
-        this.optionalArgs.put("on/off", "flip");
+        //this.optionalArgs.add(new OnOffArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.CHATSPY)
                 .playerOnly()

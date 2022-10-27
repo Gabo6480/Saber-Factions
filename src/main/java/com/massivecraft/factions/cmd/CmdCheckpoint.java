@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.WarmUpUtil;
@@ -22,7 +23,7 @@ public class CmdCheckpoint extends FCommand {
         super();
         this.aliases.addAll(Aliases.checkpoint);
 
-        this.optionalArgs.put("set", "");
+        this.optionalArgs.add(new ListStringArgumentProvider("set", null, "set"));
 
         this.requirements = new CommandRequirements.Builder(Permission.CHECKPOINT).playerOnly().memberOnly().build();
     }

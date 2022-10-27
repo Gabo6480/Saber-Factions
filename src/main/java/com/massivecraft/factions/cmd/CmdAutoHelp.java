@@ -4,6 +4,7 @@ import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.zcore.CommandVisibility;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -20,7 +21,7 @@ public class CmdAutoHelp extends FCommand {
 
         this.setHelpShort("");
 
-        this.optionalArgs.put("page", "1");
+        this.optionalArgs.add(new IntegerArgumentProvider("page", 1, (integer, context) -> integer > 0));
     }
 
     @Override

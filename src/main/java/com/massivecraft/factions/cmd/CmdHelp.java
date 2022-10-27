@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
@@ -29,7 +30,7 @@ public class CmdHelp extends FCommand {
         this.aliases.addAll(Aliases.help);
 
         //this.requiredArgs.add("");
-        this.optionalArgs.put("page", "1");
+        this.optionalArgs.add(new IntegerArgumentProvider("page", 1, (integer, context) -> integer > 0));
 
         this.requirements = new CommandRequirements.Builder(Permission.HELP)
                 .build();

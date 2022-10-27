@@ -144,7 +144,7 @@ public class CommandContext {
     // Boolean ======================
     public Boolean strAsBool(String str) {
         str = str.toLowerCase();
-        return str.startsWith("y") || str.startsWith("t") || str.startsWith("on") || str.startsWith("+") || str.startsWith("1");
+        return str.startsWith("y") || str.startsWith("sta") || str.startsWith("t") || str.startsWith("on") || str.startsWith("+") || str.startsWith("1");
     }
 
     public Boolean argAsBool(int idx, boolean def) {

@@ -12,6 +12,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.fperms.Access;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
@@ -31,8 +33,8 @@ public class CmdClaimFill extends FCommand {
         this.aliases.addAll(Aliases.claim_claimFill);
 
         // Args
-        this.optionalArgs.put("limit", String.valueOf(Conf.maxFillClaimCount));
-        this.optionalArgs.put("faction", "you");
+        this.optionalArgs.add(new IntegerArgumentProvider("limit", Conf.maxFillClaimCount, (integer, context) -> integer > 0));
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.CLAIM_FILL)
                 .playerOnly()

@@ -8,6 +8,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.EnumArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.DoubleArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.CC;
@@ -23,8 +25,8 @@ public class CmdDrain extends FCommand {
     public CmdDrain() {
         this.aliases.addAll(Aliases.drain);
 
-        this.optionalArgs.put("amount", "money");
-        this.optionalArgs.put("role", "faction role");
+        this.optionalArgs.add(new DoubleArgumentProvider("amount", ((aDouble, context) -> aDouble > 0 )));
+        this.optionalArgs.add(new EnumArgumentProvider<Role>(Role.class, "role", null));
 
         this.requirements = new CommandRequirements.Builder(Permission.DRAIN)
                 .playerOnly()
@@ -49,11 +51,11 @@ public class CmdDrain extends FCommand {
 
         int calculatedAmount = 0;
         boolean useRoleDrain = false;
-        int amountToDrain = 0;
+        double amountToDrain = 0;
         Role roleToDrain = null;
 
         if (context.args.size() == 2) {
-            amountToDrain = context.argAsInt(0);
+            amountToDrain = context.argAsDouble(0);
             roleToDrain = Role.fromString(context.args.get(1));
             if (amountToDrain > 0) {
                 useRoleDrain = true;

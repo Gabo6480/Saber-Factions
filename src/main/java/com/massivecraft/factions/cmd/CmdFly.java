@@ -8,6 +8,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.OnOffArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.WarmUpUtil;
 import com.massivecraft.factions.zcore.util.TL;
@@ -29,7 +31,7 @@ public class CmdFly extends FCommand {
     public CmdFly() {
         super();
         this.aliases.addAll(Aliases.fly);
-        this.optionalArgs.put("on/off/auto", "flip");
+        this.optionalArgs.add(new ListStringArgumentProvider("on/off", "toggle", "on", "off", "auto"));
 
         this.requirements = new CommandRequirements.Builder(Permission.FLY_FLY)
                 .memberOnly()

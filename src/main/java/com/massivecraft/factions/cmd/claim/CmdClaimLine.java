@@ -6,6 +6,9 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.fperms.Access;
@@ -28,9 +31,9 @@ public class CmdClaimLine extends FCommand {
         this.aliases.addAll(Aliases.claim_line);
 
         // Args
-        this.optionalArgs.put("amount", "1");
-        this.optionalArgs.put("direction", "facing");
-        this.optionalArgs.put("faction", "you");
+        this.optionalArgs.add(new IntegerArgumentProvider("amount", 1, (integer, context) -> integer > 0));
+        this.optionalArgs.add(new ListStringArgumentProvider("direction", "facing", "north", "east", "west", "south"));
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.CLAIM_LINE)
                 .playerOnly()

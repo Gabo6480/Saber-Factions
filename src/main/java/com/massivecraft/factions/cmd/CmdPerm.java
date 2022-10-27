@@ -4,6 +4,9 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.CompositeArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.EnumArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Role;
@@ -29,9 +32,15 @@ public class CmdPerm extends FCommand {
         super();
         this.aliases.addAll(Aliases.perm);
 
-        this.optionalArgs.put("relation", "relation");
-        this.optionalArgs.put("action", "action");
-        this.optionalArgs.put("access", "access");
+        this.optionalArgs.add(new CompositeArgumentProvider("relation",
+                new EnumArgumentProvider<Role>(Role.class, "role", null),
+                new EnumArgumentProvider<Relation>(Relation.class, "relation", null),
+                new ListStringArgumentProvider("all", null, "all")));
+        this.optionalArgs.add(new CompositeArgumentProvider("action",
+                new EnumArgumentProvider<PermissableAction>(PermissableAction.class, "action", null),
+                new ListStringArgumentProvider("all", null, "all")
+        ));
+        this.optionalArgs.add(new EnumArgumentProvider<Access>(Access.class, "access", null));
 
         this.requirements = new CommandRequirements.Builder(Permission.PERMISSIONS)
                 .playerOnly()

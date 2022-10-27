@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.cmd.core.args.number.DoubleArgumentProvider;
 import com.massivecraft.factions.iface.EconomyParticipator;
 import com.massivecraft.factions.integration.Econ;
@@ -33,7 +34,7 @@ public class CmdMoneyDeposit extends FCommand {
 
         this.requiredArgs.add(new DoubleArgumentProvider("amount", (number, context) -> number > 0));
 
-        this.optionalArgs.put("faction", "yours");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.MONEY_DEPOSIT)
                 .memberOnly()

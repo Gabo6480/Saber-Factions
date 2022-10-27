@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import com.massivecraft.factions.zcore.util.TagUtil;
@@ -34,7 +35,7 @@ public class CmdList extends FCommand {
         defaults[2] = "<a>{faction} <i>{online} / {members} online, <a>Land / Power / Maxpower: <i>{chunks}/{power}/{maxPower}";
 
         //this.requiredArgs.add("");
-        this.optionalArgs.put("page", "1");
+        this.optionalArgs.add(new IntegerArgumentProvider("page", 1, ((integer, context) -> integer > 0)));
 
         this.requirements = new CommandRequirements.Builder(Permission.LIST)
                 .playerOnly()

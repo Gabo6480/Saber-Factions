@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnlinePlayerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -18,7 +19,7 @@ public class CmdPower extends FCommand {
     public CmdPower() {
         super();
         this.aliases.addAll(Aliases.power_power);
-        this.optionalArgs.put("player name", "you");
+        this.optionalArgs.add(new OnlinePlayerArgumentProvider("player", "you"));
 
         this.requirements = new CommandRequirements.Builder(Permission.POWER)
                 .build();

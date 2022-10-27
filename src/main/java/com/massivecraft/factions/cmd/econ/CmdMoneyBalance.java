@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
@@ -20,7 +21,7 @@ public class CmdMoneyBalance extends FCommand {
         this.aliases.addAll(Aliases.money_balance);
 
         //this.requiredArgs.add("");
-        this.optionalArgs.put("faction", "yours");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction", "yours"));
 
         this.setHelpShort(TL.COMMAND_MONEYBALANCE_SHORT.toString());
 

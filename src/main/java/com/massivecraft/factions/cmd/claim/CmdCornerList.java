@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.WorldArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.util.TL;
@@ -21,7 +22,7 @@ public class CmdCornerList extends FCommand {
     public CmdCornerList() {
         super();
         this.aliases.addAll(Aliases.corner_list);
-        this.optionalArgs.put("world", "name");
+        this.optionalArgs.add(new WorldArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.CORNER_LIST)
                 .playerOnly()

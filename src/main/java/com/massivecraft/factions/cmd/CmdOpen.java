@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnOffArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.Cooldown;
@@ -22,7 +23,7 @@ public class CmdOpen extends FCommand {
     public CmdOpen() {
         super();
         this.aliases.addAll(Aliases.open);
-        this.optionalArgs.put("yes/no", "flip");
+        //this.optionalArgs.add(new OnOffArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.OPEN)
                 .withRole(Role.COLEADER)
@@ -33,13 +34,14 @@ public class CmdOpen extends FCommand {
 
     @Override
     public void perform(CommandContext context) {
-        // if economy is enabled, they're not on the bypass list, and this command has a cost set, make 'em pay
-        if (!context.payForCommand(Conf.econCostOpen, TL.COMMAND_OPEN_TOOPEN, TL.COMMAND_OPEN_FOROPEN)) {
-            return;
-        }
 
         if (Cooldown.isOnCooldown(context.fPlayer.getPlayer(), "openCooldown") && !context.fPlayer.isAdminBypassing()) {
             context.msg(TL.COMMAND_COOLDOWN);
+            return;
+        }
+
+        // if economy is enabled, they're not on the bypass list, and this command has a cost set, make 'em pay
+        if (!context.payForCommand(Conf.econCostOpen, TL.COMMAND_OPEN_TOOPEN, TL.COMMAND_OPEN_FOROPEN)) {
             return;
         }
 

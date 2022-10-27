@@ -9,6 +9,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionMemberArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
@@ -25,7 +26,7 @@ public class CmdMod extends FCommand {
         super();
         this.aliases.addAll(Aliases.mod);
 
-        this.optionalArgs.put("player name", "name");
+        this.optionalArgs.add(new FactionMemberArgumentProvider(((fPlayer, context) -> fPlayer.getRole() != Role.LEADER && (Permission.MOD_ANY.has(context.sender, false) || context.fPlayer.getRole().isAtLeast(Role.COLEADER) && fPlayer != context.fPlayer))));
 
         this.requirements = new CommandRequirements.Builder(Permission.MOD)
                 .playerOnly()

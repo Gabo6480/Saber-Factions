@@ -59,6 +59,7 @@ public class Aliases {
     public static ArrayList<String> roles_demote = new ArrayList<>(Collections.singletonList("demote"));
     public static ArrayList<String> roles_promote = new ArrayList<>(Collections.singletonList("promote"));
     public static ArrayList<String> tnt_tnt = new ArrayList<>(Collections.singletonList("tnt"));
+    public static ArrayList<String> tnt_addall = new ArrayList<>(Collections.singletonList("addall"));
 
     public static ArrayList<String> boosters = new ArrayList<>(Collections.singletonList("boosters"));
     public static ArrayList<String> giveBooster = new ArrayList<>(Collections.singletonList("givebooster"));
@@ -127,6 +128,11 @@ public class Aliases {
     public static ArrayList<String> power_boost = new ArrayList<>(Collections.singletonList("powerboost"));
     public static ArrayList<String> reload = new ArrayList<>(Collections.singletonList("reload"));
     public static ArrayList<String> rules = new ArrayList<>(Arrays.asList("r", "rule", "rules"));
+    public static ArrayList<String> rules_add = new ArrayList<>(Collections.singletonList("add"));
+    public static ArrayList<String> rules_clear = new ArrayList<>(Collections.singletonList("clear"));
+    public static ArrayList<String> rules_remove = new ArrayList<>(Collections.singletonList("remove"));
+    public static ArrayList<String> rules_see = new ArrayList<>(Collections.singletonList("see"));
+    public static ArrayList<String> rules_set = new ArrayList<>(Collections.singletonList("set"));
     public static ArrayList<String> saveAll = new ArrayList<>(Arrays.asList("save", "saveall"));
     public static ArrayList<String> scoreboard = new ArrayList<>(Arrays.asList("sb", "scoreboard"));
     public static ArrayList<String> setPower = new ArrayList<>(Arrays.asList("setpower", "sp"));

@@ -27,6 +27,11 @@ public class OnlineFPlayerArgumentProvider extends AbstractArgumentProvider<FPla
     public OnlineFPlayerArgumentProvider(BiFunction<FPlayer, CommandContext, Boolean> fPlayerFilter){
         super("player",null, fPlayerFilter);
     }
+
+    public OnlineFPlayerArgumentProvider(@NotNull String name, String defaultValue){
+        super(name,defaultValue,(p, ctx) -> true);
+    }
+
     public OnlineFPlayerArgumentProvider(@NotNull String name, String defaultValue, BiFunction<FPlayer, CommandContext, Boolean> filter) {
         super(name, defaultValue, filter);
     }

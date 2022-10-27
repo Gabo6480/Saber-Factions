@@ -2,6 +2,7 @@ package com.massivecraft.factions.cmd.core;
 
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.core.args.ArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.OptionalArgumentProvider;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -61,15 +62,15 @@ public class BrigadierManager {
                     stack.add(RequiredArgumentBuilder.argument(required.getName(), StringArgumentType.word()));
                 }
 
-                for (Map.Entry<String, String> optionalEntry : subCommand.optionalArgs.entrySet()) {
+                for (OptionalArgumentProvider optionalEntry : subCommand.optionalArgs) {
                     RequiredArgumentBuilder<Object, ?> optional;
 
                     // Optional without default
-                    if (optionalEntry.getKey().equalsIgnoreCase(optionalEntry.getValue())) {
-                        optional = RequiredArgumentBuilder.argument(":" + optionalEntry.getKey(), StringArgumentType.word());
+                    if (optionalEntry.getDefaultValue() == null) {
+                        optional = RequiredArgumentBuilder.argument(":" + optionalEntry.getName(), StringArgumentType.word());
                         // Optional with default, explain
                     } else {
-                        optional = RequiredArgumentBuilder.argument(optionalEntry.getKey() + "|" + optionalEntry.getValue(), StringArgumentType.word());
+                        optional = RequiredArgumentBuilder.argument(optionalEntry.getName() + "|" + optionalEntry.getDefaultValue(), StringArgumentType.word());
                     }
 
                     stack.add(optional);

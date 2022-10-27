@@ -2,6 +2,7 @@ package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Conf;
 import com.massivecraft.factions.cmd.core.*;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.struct.ChatMode;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
@@ -20,7 +21,14 @@ public class CmdChat extends FCommand {
         this.aliases.addAll(Aliases.chat);
 
         //this.requiredArgs.add("");
-        this.optionalArgs.put("mode", "next");
+        this.optionalArgs.add(new ListStringArgumentProvider("mode", "next",
+                "next",
+                "public",
+                "mod",
+                "alliance",
+                "faction",
+                "truce"
+        ));
 
         this.requirements = new CommandRequirements.Builder(Permission.CHAT)
                 .playerOnly()

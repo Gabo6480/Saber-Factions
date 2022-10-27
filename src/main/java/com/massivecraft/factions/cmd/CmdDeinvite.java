@@ -5,6 +5,7 @@ import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.core.*;
+import com.massivecraft.factions.cmd.core.args.OnlineFPlayerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
@@ -21,7 +22,7 @@ public class CmdDeinvite extends FCommand {
         super();
         this.aliases.addAll(Aliases.deinvite);
 
-        this.optionalArgs.put("player name", "name");
+        this.optionalArgs.add(new OnlineFPlayerArgumentProvider(((fPlayer, context) -> context.faction.isInvited(fPlayer))));
 
         this.requirements = new CommandRequirements.Builder(Permission.DEINVITE)
                 .withAction(PermissableAction.INVITE)

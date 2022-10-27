@@ -9,6 +9,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionMemberArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
@@ -27,7 +28,7 @@ public class CmdColeader extends FCommand {
         super();
         this.aliases.addAll(Aliases.coleader);
 
-        this.optionalArgs.put("member", "");
+        this.optionalArgs.add(new FactionMemberArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.COLEADER)
                 .memberOnly()

@@ -27,7 +27,7 @@ public class CmdSetFWarp extends FCommand {
     public CmdSetFWarp() {
         this.aliases.addAll(Aliases.setWarp);
         this.requiredArgs.add(new SingleWordArgumentProvider("warp name", (warp, context) -> !context.faction.isWarp(warp)));
-        this.optionalArgs.put("password", "password");
+        this.optionalArgs.add(new SingleWordArgumentProvider("password"));
         this.requirements = new CommandRequirements.Builder(Permission.SETWARP).playerOnly().memberOnly().withAction(PermissableAction.SETWARP).build();
     }
 

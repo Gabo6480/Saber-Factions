@@ -9,6 +9,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.CC;
@@ -27,7 +28,7 @@ public class CmdAutoClaim extends FCommand {
         this.aliases.addAll(Aliases.claim_auto);
 
         //this.requiredArgs.add("");
-        this.optionalArgs.put("faction", "your");
+        this.optionalArgs.add(new FactionTagArgumentProvider("faction","yours"));
 
         this.requirements = new CommandRequirements.Builder(Permission.AUTOCLAIM)
                 .playerOnly()
