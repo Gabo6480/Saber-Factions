@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.discord.Discord;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
@@ -22,10 +23,7 @@ public class CmdWeeWoo extends FCommand {
 
     public CmdWeeWoo() {
         this.aliases.addAll(Aliases.weewoo);
-        this.requiredArgs.put("start|stop",context -> new ArrayList<String>(){{
-            add("start");
-            add("stop");
-        }});
+        this.requiredArgs.add(new ListStringArgumentProvider("start|stop", null, "start", "stop"));
 
         this.requirements = new CommandRequirements.Builder(Permission.CHECK)
                 .playerOnly()

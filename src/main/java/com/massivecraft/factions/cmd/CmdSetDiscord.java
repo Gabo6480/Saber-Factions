@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
@@ -22,9 +23,7 @@ public class CmdSetDiscord extends FCommand {
         super();
         this.aliases.addAll(Aliases.discord_set);
 
-        this.requiredArgs.put("link",context -> new ArrayList<String>(){{
-            add("[<link>]");
-        }});
+        this.requiredArgs.add(new SingleWordArgumentProvider("link"));
 
         this.optionalArgs.put("faction", "yours");
 

@@ -360,6 +360,8 @@ public class CommandContext {
 
     /*
         Common Methods
+
+        TODO: All of this shouldn't be here.
     */
     public boolean canIAdministerYou(FPlayer i, FPlayer you) {
         if (!i.getFaction().equals(you.getFaction())) {

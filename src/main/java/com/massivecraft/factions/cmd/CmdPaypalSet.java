@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
@@ -23,7 +24,7 @@ public class CmdPaypalSet extends FCommand {
     public CmdPaypalSet() {
         this.aliases.addAll(Aliases.paypal_set);
 
-        this.requiredArgs.put("email", context -> new ArrayList<String>(){{add("[<email>]");}});
+        this.requiredArgs.add(new SingleWordArgumentProvider("email"));
 
         this.optionalArgs.put("faction", "yours");
 

@@ -1,17 +1,14 @@
 package com.massivecraft.factions.cmd.tnt;
 
 import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CmdSetTnt extends FCommand {
 
@@ -21,28 +18,8 @@ public class CmdSetTnt extends FCommand {
 
     public CmdSetTnt() {
         this.aliases.addAll(Aliases.setTnt);
-        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
-        this.requiredArgs.put("amount", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(1);
-            int maxTnt = context.faction.getTntBankLimit();
-            try {
-
-                if(maxTnt >= 0 && Integer.parseInt(value) <= maxTnt)
-                    for (int i = 0; i < 10; i++) {
-                        String completeInt = value + i;
-                        // Just to check if it can be parsed into a double
-                        if(Integer.parseInt(completeInt) <= maxTnt)
-                            completions.add(completeInt);
-                    }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new FactionTagArgumentProvider());
+        this.requiredArgs.add(new IntegerArgumentProvider("amount", (integer, context) -> integer > 0 && integer <= context.faction.getTntBankLimit()));
 
         this.requirements = new CommandRequirements.Builder(Permission.SET_TNT).build();
     }

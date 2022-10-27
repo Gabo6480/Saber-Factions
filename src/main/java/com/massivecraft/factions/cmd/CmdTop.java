@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Relation;
@@ -27,28 +28,27 @@ public class CmdTop extends FCommand {
     public CmdTop() {
         super();
         this.aliases.addAll(Aliases.top);
-        this.requiredArgs.put("criteria", context -> new ArrayList<String>(){{
-            add("members");
-            add("players");
-            add("start");
-            add("age");
-            add("power");
-            add("maxpower");
-            add("points");
-            add("kills");
-            add("deaths");
-            add("alts");
-            add("land");
-            add("claims");
-            add("online");
-            add("money");
-            add("balance");
-            add("bal");
-            add("allies");
-            add("enemies");
-            add("truces");
-            add("neutrals");
-        }});
+        this.requiredArgs.add(new ListStringArgumentProvider("criteria", null,
+                "members",
+                "players",
+                "start",
+                "age",
+                "power",
+                "maxpower",
+                "points",
+                "kills",
+                "deaths",
+                "alts",
+                "land",
+                "claims",
+                "online",
+                "money",
+                "balance",
+                "bal",
+                "allies",
+                "enemies",
+                "truces",
+                "neutrals"));
         this.optionalArgs.put("page", "1");
 
         this.requirements = new CommandRequirements.Builder(Permission.TOP)

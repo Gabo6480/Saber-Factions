@@ -9,6 +9,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.CustomArgumentProvider;
 import com.massivecraft.factions.event.FPlayerLeaveEvent;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
@@ -33,7 +34,7 @@ public class CmdKickAlt extends FCommand {
     public CmdKickAlt() {
         super();
         this.aliases.addAll(Aliases.alts_kick);
-        this.requiredArgs.put("player", context -> context.faction.getAltPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
+        this.requiredArgs.add(new CustomArgumentProvider<>("player", null, (context, integer) -> context.faction.getAltPlayers(), FPlayer::getName));
 
         this.requirements = new CommandRequirements.Builder(Permission.KICK)
                 .playerOnly()

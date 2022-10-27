@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import com.massivecraft.factions.zcore.util.TextUtil;
@@ -25,7 +26,7 @@ public class CmdDescription extends FCommand {
         super();
         this.aliases.addAll(Aliases.description);
 
-        this.requiredArgs.put("desc", (context) -> new ArrayList<String>(){{add("[<description>]");}});
+        this.requiredArgs.add(new SingleWordArgumentProvider("description"));
 
         this.requirements = new CommandRequirements.Builder(Permission.DESCRIPTION)
                 .playerOnly()

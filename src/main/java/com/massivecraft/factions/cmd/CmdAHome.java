@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnlineFPlayerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -25,11 +26,7 @@ public class CmdAHome extends FCommand {
         super();
         this.aliases.addAll(Aliases.ahome);
 
-        this.requiredArgs.put("player", context -> FPlayers.getInstance().getOnlinePlayers().stream().filter(fPlayer -> {
-            if (fPlayer.hasFaction())
-                return fPlayer.getFaction().hasHome();
-            return false;
-        }).map(FPlayer::getName).collect(Collectors.toList()));
+        this.requiredArgs.add(new OnlineFPlayerArgumentProvider((fPlayer, context) -> fPlayer.hasFaction() && fPlayer.getFaction().hasHome()));
 
         this.requirements = new CommandRequirements.Builder(Permission.AHOME).noDisableOnLock().build();
     }

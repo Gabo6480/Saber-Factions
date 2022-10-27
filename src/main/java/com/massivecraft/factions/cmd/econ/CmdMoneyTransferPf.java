@@ -5,6 +5,9 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.AllFPlayerArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.DoubleArgumentProvider;
 import com.massivecraft.factions.iface.EconomyParticipator;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
@@ -27,29 +30,9 @@ public class CmdMoneyTransferPf extends FCommand {
     public CmdMoneyTransferPf() {
         this.aliases.addAll(Aliases.money_transfer_Pf);
 
-        this.requiredArgs.put("amount", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(0);
-            try{
-                // Just to check if it can be parsed into a double
-                Double.parseDouble(value);
-                if(!value.contains("."))
-                completions.add(value + ".");
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Double.parseDouble(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-            return completions;
-        });
-        this.requiredArgs.put("from player", context -> FPlayers.getInstance().getAllFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
-        this.requiredArgs.put("to faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
+        this.requiredArgs.add(new DoubleArgumentProvider("amount", (number, context) -> number > 0));
+        this.requiredArgs.add(new AllFPlayerArgumentProvider("from player"));
+        this.requiredArgs.add(new FactionTagArgumentProvider("to faction"));
 
 
         this.requirements = new CommandRequirements.Builder(Permission.MONEY_P2F).build();

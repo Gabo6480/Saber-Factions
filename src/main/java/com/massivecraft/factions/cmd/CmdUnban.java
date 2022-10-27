@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.CustomArgumentProvider;
 import com.massivecraft.factions.struct.BanInfo;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.fperms.Access;
@@ -26,17 +27,16 @@ public class CmdUnban extends FCommand {
     public CmdUnban() {
         super();
         this.aliases.addAll(Aliases.unban);
-        this.requiredArgs.put("player", context -> {
-            List<String> completions = new ArrayList<>();
-
-            for(BanInfo banInfo: context.faction.getBannedPlayers()){
+        this.requiredArgs.add(new CustomArgumentProvider<FPlayer>("player", null, (context, integer) -> {
+            List<FPlayer> completions = new ArrayList<>();
+            for (BanInfo banInfo : context.faction.getBannedPlayers()) {
                 FPlayer player = FPlayers.getInstance().getById(banInfo.getBanned());
-                if(player != null)
-                    completions.add(player.getName());
+                if (player != null)
+                    completions.add(player);
             }
-
             return completions;
-        });
+        },
+                FPlayer::getName));
 
         this.requirements = new CommandRequirements.Builder(Permission.BAN)
                 .playerOnly()

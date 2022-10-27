@@ -8,6 +8,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FPlayerAndFactionArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -27,44 +29,24 @@ public class CmdPointsRemove extends FCommand {
         super();
         this.aliases.addAll(Aliases.points_remove);
 
-        this.requiredArgs.put("target", context -> {
-            List<String> completions = Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList());
+        this.requiredArgs.add( new FPlayerAndFactionArgumentProvider());
+        this.requiredArgs.add(new IntegerArgumentProvider("points", (numb, context) -> {
+            if(numb < 0)
+                return false;
 
-            completions.addAll(FPlayers.getInstance().getAllFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
-
-            return completions;
-        });
-        this.requiredArgs.put("points", context -> {
-            List<String> completions = new ArrayList<>();
             Faction faction;
-
             FPlayer fPlayer = context.argAsFPlayer(0, null, false);
-            if (fPlayer != null) {
-                faction = fPlayer.getFaction();
-            }
-            else
-                faction = Factions.getInstance().getByTag(context.args.get(0));
-            if(faction == null)
-                return null;
+            if (fPlayer != null) faction = fPlayer.getFaction();
+            else faction = Factions.getInstance().getByTag(context.args.get(0));
 
-            String value = context.argAsString(1);
-            int points = faction.getPoints();
-            try {
-                int intValue = Integer.parseInt(value);
-                if( intValue <= points && intValue > 0)
-                    for (int i = 0; i < 10; i++) {
-                        String completeInt = value + i;
-                        // Just to check if it can be parsed into a double
-                        if(Integer.parseInt(completeInt) <= points)
-                            completions.add(completeInt);
-                    }
+            if(faction != null){
+                int points = faction.getPoints();
+
+                return points <= numb;
             }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-            return completions;
-        });
+
+            return false;
+        }));
 
         this.requirements = new CommandRequirements.Builder(Permission.REMOVEPOINTS)
                 .build();

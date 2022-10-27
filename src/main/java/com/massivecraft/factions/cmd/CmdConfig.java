@@ -5,6 +5,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.CustomArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
@@ -30,137 +32,124 @@ public class CmdConfig extends FCommand {
         super();
         this.aliases.addAll(Aliases.config);
 
-        this.requiredArgs.put("setting",
-                (context) -> {
-                    List<String> completions = new ArrayList<>();
-                    for (Field field : Conf.class.getDeclaredFields()) completions.add(field.getName());
-                    return  completions;
-                });
+        this.requiredArgs.add(new ListStringArgumentProvider("setting", Arrays.stream(Conf.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList())));
 
-        this.requiredArgs.put("value",
-                (context) -> {
-                    List<String> completions = new ArrayList<>();
+        this.requiredArgs.add(new CustomArgumentProvider<String>("value", null, (context, integer) -> {
+            List<String> completions = new ArrayList<>();
 
-                    String fieldName = getAsValidFieldName(context.argAsString(0));
-                    String value = concatArguments(context.args.subList(1,context.args.size()));
+            String fieldName = getAsValidFieldName(context.argAsString(0));
+            String value = concatArguments(context.args.subList(1,context.args.size()));
 
-                    try {
-                        Field target = Conf.class.getField(fieldName);
+            try {
+                Field target = Conf.class.getField(fieldName);
 
-                        // boolean
-                        if (target.getType() == boolean.class) {
-                            completions.add("true");
-                            completions.add("false");
-                        }
+                // boolean
+                if (target.getType() == boolean.class) {
+                    completions.add("true");
+                    completions.add("false");
+                }
 
-                        // int
-                        else if (target.getType() == int.class) {
-                            // Just to check if it can be parsed into an int
-                            Integer.parseInt(value);
+                // int
+                else if (target.getType() == int.class) {
+                    // Just to check if it can be parsed into an int
+                    Integer.parseInt(value);
 
-                            for (int i = 0; i < 10; i++) {
-                                String completeInt = value + i;
-                                // Just to check if it can be parsed into an int
-                                Integer.parseInt(completeInt);
-                                completions.add(completeInt);
-                            }
-                        }
-
-                        // long
-                        else if (target.getType() == long.class) {
-                            // Just to check if it can be parsed into a long
-                            Long.parseLong(value);
-
-                            for (int i = 0; i < 10; i++) {
-                                String completeInt = value + i;
-                                // Just to check if it can be parsed into a long
-                                Long.parseLong(completeInt);
-                                completions.add(completeInt);
-                            }
-                        }
-
-                        // double
-                        else if (target.getType() == double.class) {
-                            // Just to check if it can be parsed into a double
-                            Double.parseDouble(value);
-                            if(!value.contains(".")) completions.add(value + ".");
-                            for (int i = 0; i < 10; i++) {
-                                String completeInt = value + i;
-                                // Just to check if it can be parsed into a double
-                                Double.parseDouble(completeInt);
-                                completions.add(completeInt);
-                            }
-                        }
-
-                        // float
-                        else if (target.getType() == float.class) {
-                            // Just to check if it can be parsed into a float
-                            Float.parseFloat(value);
-                            completions.add(value + ".");
-                            for (int i = 0; i < 10; i++) {
-                                String completeInt = value + i;
-                                // Just to check if it can be parsed into a float
-                                Float.parseFloat(completeInt);
-                                completions.add(completeInt);
-                            }
-
-                        }
-
-                        // String
-                        else if (target.getType() == String.class) {
-                            target.set(null, value);
-                            completions.add("[<string>]");
-                        }
-
-                        // ChatColor
-                        else if (target.getType() == ChatColor.class) {
-                            completions.addAll(Arrays.stream(ChatColor.values()).map(ChatColor::toString).collect(Collectors.toList()));
-                        }
-
-                        // Set<?> or other parameterized collection
-                        else if (target.getGenericType() instanceof ParameterizedType) {
-                            ParameterizedType targSet = (ParameterizedType) target.getGenericType();
-                            Type innerType = targSet.getActualTypeArguments()[0];
-
-                            // not a Set, somehow, and that should be the only collection we're using in Conf.java
-                            if (targSet.getRawType() != Set.class) {
-                                return null;
-                            }
-
-                            // Set<Material>
-                            else if (innerType == Material.class) {
-                                completions.addAll(Arrays.stream(Material.values()).map(Material::toString).collect(Collectors.toList()));
-                            }
-
-                            // Set<String>
-                            else if (innerType == String.class) {
-                                @SuppressWarnings("unchecked") Set<String> stringSet = (Set<String>) target.get(null);
-
-                                completions.add("[<new string>]");
-                                completions.addAll(stringSet);
-                            }
-
-                            // Set of unknown type
-                            else {
-                                return null;
-                            }
-                        }
-
-                        // unknown type
-                        else {
-                            return null;
-                        }
+                    for (int i = 0; i < 10; i++) {
+                        String completeInt = value + i;
+                        // Just to check if it can be parsed into an int
+                        Integer.parseInt(completeInt);
+                        completions.add(completeInt);
                     }
-                    catch (NumberFormatException ex) {
-                        if(completions.isEmpty())
-                            return null;
+                }
+
+                // long
+                else if (target.getType() == long.class) {
+                    // Just to check if it can be parsed into a long
+                    Long.parseLong(value);
+
+                    for (int i = 0; i < 10; i++) {
+                        String completeInt = value + i;
+                        // Just to check if it can be parsed into a long
+                        Long.parseLong(completeInt);
+                        completions.add(completeInt);
                     }
-                    catch (Exception ignored) {
-                        return null;
+                }
+
+                // double
+                else if (target.getType() == double.class) {
+                    // Just to check if it can be parsed into a double
+                    Double.parseDouble(value);
+                    if(!value.contains(".")) completions.add(value + ".");
+                    for (int i = 0; i < 10; i++) {
+                        String completeInt = value + i;
+                        // Just to check if it can be parsed into a double
+                        Double.parseDouble(completeInt);
+                        completions.add(completeInt);
+                    }
+                }
+
+                // float
+                else if (target.getType() == float.class) {
+                    // Just to check if it can be parsed into a float
+                    Float.parseFloat(value);
+                    if(!value.contains("."))
+                      completions.add(value + ".");
+                    for (int i = 0; i < 10; i++) {
+                        String completeInt = value + i;
+                        // Just to check if it can be parsed into a float
+                        Float.parseFloat(completeInt);
+                        completions.add(completeInt);
                     }
 
-                    return  completions;
-                });
+                }
+
+                // String
+                else if (target.getType() == String.class) {
+                    completions.add("[<string>]");
+                }
+                
+                // ChatColor
+                else if (target.getType() == ChatColor.class) {
+                    completions.addAll(Arrays.stream(ChatColor.values()).map(ChatColor::toString).collect(Collectors.toList()));
+                }
+
+                // Set<?> or other parameterized collection
+                else if (target.getGenericType() instanceof ParameterizedType) {
+                    ParameterizedType targSet = (ParameterizedType) target.getGenericType();
+                    Type innerType = targSet.getActualTypeArguments()[0];
+
+                    // not a Set, somehow, and that should be the only collection we're using in Conf.java
+                    if (targSet.getRawType() != Set.class) {
+                        return new ArrayList<>();
+                    }
+
+                    // Set<Material>
+                    else if (innerType == Material.class) {
+                        completions.addAll(Arrays.stream(Material.values()).map(Material::toString).collect(Collectors.toList()));
+                    }
+
+                    // Set<String>
+                    else if (innerType == String.class) {
+                        @SuppressWarnings("unchecked") Set<String> stringSet = (Set<String>) target.get(null);
+
+                        completions.add("[<new string>]");
+                    }
+
+                    // Set of unknown type
+                    else {
+                        return new ArrayList<>();
+                    }
+                }
+
+                // unknown type
+                else {
+                    return new ArrayList<>();
+                }
+            }
+            catch (Exception ignored) {}
+
+            return  completions;
+        }, s -> s));
 
         this.requirements = new CommandRequirements.Builder(Permission.CONFIG)
                 .noErrorOnManyArgs()

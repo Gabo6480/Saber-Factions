@@ -1,24 +1,19 @@
 package com.massivecraft.factions.cmd.claim;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.*;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.CustomArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
 import com.massivecraft.factions.zcore.util.TL;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CmdClaimAt extends FCommand {
 
@@ -32,47 +27,9 @@ public class CmdClaimAt extends FCommand {
         super();
         this.aliases.addAll(Aliases.claim_at);
 
-        this.requiredArgs.put("world", context -> Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList()));
-        this.requiredArgs.put("x", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(1);
-            try {
-                // Just to check if it can be parsed into a double
-                Integer.parseInt(value);
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Integer.parseInt(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-
-            return completions;
-        });
-        this.requiredArgs.put("z", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(2);
-            try {
-                // Just to check if it can be parsed into a double
-                Integer.parseInt(value);
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Integer.parseInt(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new CustomArgumentProvider<>("world", null, (context, integer) -> Bukkit.getWorlds(), World::getName));
+        this.requiredArgs.add(new IntegerArgumentProvider("x"));
+        this.requiredArgs.add(new IntegerArgumentProvider("z"));
 
         this.requirements = new CommandRequirements.Builder(Permission.CLAIMAT)
                 .playerOnly()

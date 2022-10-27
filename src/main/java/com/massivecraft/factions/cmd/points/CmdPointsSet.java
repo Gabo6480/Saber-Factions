@@ -1,19 +1,16 @@
 package com.massivecraft.factions.cmd.points;
 
 import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FPlayerAndFactionArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CmdPointsSet extends FCommand {
 
@@ -27,44 +24,18 @@ public class CmdPointsSet extends FCommand {
         super();
         this.aliases.addAll(Aliases.points_set);
 
-        this.requiredArgs.put("target", context -> {
-            List<String> completions = Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList());
+        this.requiredArgs.add(new FPlayerAndFactionArgumentProvider());
+        this.requiredArgs.add(new IntegerArgumentProvider("points", (numb, context) -> {
+            if(numb < 0)
+                return false;
 
-            completions.addAll(FPlayers.getInstance().getAllFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
-
-            return completions;
-        });
-        this.requiredArgs.put("points", context -> {
-            List<String> completions = new ArrayList<>();
             Faction faction;
-
             FPlayer fPlayer = context.argAsFPlayer(0, null, false);
-            if (fPlayer != null) {
-                faction = fPlayer.getFaction();
-            }
-            else
-                faction = Factions.getInstance().getByTag(context.args.get(0));
-            if(faction == null)
-                return null;
+            if (fPlayer != null) faction = fPlayer.getFaction();
+            else faction = Factions.getInstance().getByTag(context.args.get(0));
 
-            String value = context.argAsString(1);
-            try {
-                    if(Integer.parseInt(value) < 0)
-                        return null;
-
-                    for (int i = 0; i < 10; i++) {
-                        String completeInt = value + i;
-                        // Just to check if it can be parsed into a double
-                        Integer.parseInt(completeInt);
-                            completions.add(completeInt);
-                    }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-            return completions;
-        });
+            return faction != null;
+        }));
 
 
         this.requirements = new CommandRequirements.Builder(Permission.SETPOINTS)

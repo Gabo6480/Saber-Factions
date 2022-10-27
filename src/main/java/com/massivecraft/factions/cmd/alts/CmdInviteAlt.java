@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.OnlinePlayerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.util.CC;
@@ -31,7 +32,7 @@ public class CmdInviteAlt extends FCommand {
     public CmdInviteAlt() {
         super();
         this.aliases.addAll(Aliases.alts_invite);
-        this.requiredArgs.put("player", context -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+        this.requiredArgs.add(new OnlinePlayerArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.INVITE)
                 .playerOnly()

@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.event.FactionRelationEvent;
 import com.massivecraft.factions.event.FactionRelationWishEvent;
 import com.massivecraft.factions.scoreboards.FTeamWrapper;
@@ -33,19 +34,11 @@ public abstract class FRelationCommand extends FCommand {
 
     public FRelationCommand() {
         super();
-        this.requiredArgs.put("faction", context -> {
-            if(!context.faction.isNormal())
-                return null;
-
-            List<String> completions = new ArrayList<>();
-
-            for (Faction faction : Factions.getInstance().getAllFactions()){
-                if(faction.isNormal() && !context.faction.getId().equals(faction.getId()))
-                    completions.add(faction.getTag());
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new FactionTagArgumentProvider((faction, context)->{
+            if(!context.faction.isNormal()) // Don't give recommendations to System Factions since they shouldn't have relationships anyway
+                return false;
+            return faction.isNormal() && !context.faction.getId().equals(faction.getId());
+        }));
 
         this.requirements = new CommandRequirements.Builder(Permission.RELATION)
                 .withRole(Role.MODERATOR)

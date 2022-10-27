@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.cmd.tnt.tntprovider.FactionTNTProvider;
 import com.massivecraft.factions.cmd.tnt.tntprovider.PlayerTNTProvider;
 import com.massivecraft.factions.cmd.tnt.tntprovider.TNTProvider;
@@ -37,48 +38,10 @@ public class CmdTntFill extends FCommand {
         this.fillTaskMap = new WeakHashMap<>();
         this.aliases.addAll(Aliases.tnt_tntfill);
 
-        this.requiredArgs.put("radius", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(0);
-            int maxRadius = FactionsPlugin.getInstance().getConfig().getInt("Tntfill.max-radius", -1);
-            try {
-
-                if(maxRadius > 0 && Integer.parseInt(value) <= maxRadius)
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    if(Integer.parseInt(completeInt) <= maxRadius)
-                        completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-
-            return completions;
-        });
-        this.requiredArgs.put("amount", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(1);
-            int maxAmount = FactionsPlugin.getInstance().getConfig().getInt("Tntfill.max-amount", -1);
-            try {
-
-                if(maxAmount > 0 && Integer.parseInt(value) <= maxAmount)
-                    for (int i = 0; i < 10; i++) {
-                        String completeInt = value + i;
-                        // Just to check if it can be parsed into a double
-                        if(Integer.parseInt(completeInt) <= maxAmount)
-                            completions.add(completeInt);
-                    }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new IntegerArgumentProvider("radius",
+                (number, context) -> number > 0 && number <= FactionsPlugin.getInstance().getConfig().getInt("Tntfill.max-radius", -1)));
+        this.requiredArgs.add(new IntegerArgumentProvider("amount",
+                (number, context) -> number > 0 && number <= FactionsPlugin.getInstance().getConfig().getInt("Tntfill.max-amount", -1)));
 
         this.requirements = new CommandRequirements.Builder(Permission.TNTFILL).playerOnly().memberOnly().withAction(PermissableAction.TNTFILL).build();
     }

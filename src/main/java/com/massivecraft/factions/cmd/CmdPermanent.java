@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
@@ -27,14 +28,7 @@ public class CmdPermanent extends FCommand {
     public CmdPermanent() {
         super();
         this.aliases.addAll(Aliases.permanent_faction);
-        this.requiredArgs.put("faction", context -> {
-            List<String> completions = new ArrayList<>();
-            for (Faction faction : Factions.getInstance().getAllFactions()){
-                completions.add(faction.getTag());
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new FactionTagArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.SET_PERMANENT)
                 .build();

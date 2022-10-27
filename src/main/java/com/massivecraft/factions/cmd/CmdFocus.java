@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnlineFPlayerArgumentProvider;
 import com.massivecraft.factions.scoreboards.FTeamWrapper;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
@@ -23,20 +24,7 @@ public class CmdFocus extends FCommand {
     public CmdFocus() {
         aliases.addAll(Aliases.focus);
 
-        requiredArgs.put("player", (context) -> {
-            List<String> completions = new ArrayList<>();
-            for (FPlayer player : FPlayers.getInstance().getOnlinePlayers()){
-                if(player.getFaction().getId().equals(context.faction.getId()))
-                    continue;
-
-                completions.add(player.getName());
-            }
-
-            if(completions.isEmpty())
-                return null;
-
-            return completions;
-        });
+        requiredArgs.add(new OnlineFPlayerArgumentProvider(((fPlayer, context) -> !fPlayer.getFaction().getId().equals(context.faction.getId()))));
 
         this.requirements = new CommandRequirements.Builder(Permission.FOCUS)
                 .playerOnly()

@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.FactionMemberArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
@@ -26,20 +27,9 @@ public class FPromoteCommand extends FCommand {
 
     public FPromoteCommand() {
         super();
-        this.requiredArgs.put("member", context -> {
-            List<String> completions = new ArrayList<>();
-
-            for (FPlayer fPlayer : context.faction.getFPlayers()) {
-                if (fPlayer.isAlt()
-                        || fPlayer.getRole() == Role.lowestRole() && relative <= 0
-                        || fPlayer.getRole() == Role.highestRole() && relative > 0)
-                    continue;
-
-                completions.add(fPlayer.getName());
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new FactionMemberArgumentProvider(((fPlayer, context) -> !(fPlayer.isAlt()
+                || fPlayer.getRole() == Role.lowestRole() && relative <= 0
+                || fPlayer.getRole() == Role.highestRole() && relative > 0))));
 
         this.requirements = new CommandRequirements.Builder(Permission.PROMOTE)
                 .playerOnly()

@@ -7,6 +7,10 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.CompositeArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.FPlayerAndFactionArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.DoubleArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
 import com.massivecraft.factions.zcore.util.TL;
@@ -28,57 +32,11 @@ public class CmdPowerBoost extends FCommand {
     public CmdPowerBoost() {
         super();
         this.aliases.addAll(Aliases.power_boost);
-        this.requiredArgs.put("type", context -> new ArrayList<String>(){{
-            add("plugin");
-            add("player");
-            add("faction");
-            add("f");
-        }});
-        this.requiredArgs.put("target", context -> {
-            String type = context.argAsString(0).toLowerCase();
-            List<String> completions = new ArrayList<>();
-            switch (type){
-                case "f":
-                case "faction":
-                {
-                    for (Faction faction : Factions.getInstance().getAllFactions()){
-                        completions.add(faction.getTag());
-                    }
-                }
-                break;
-                case "player":
-                case "plugin":
-                {
-                    for (Player player : Bukkit.getServer().getOnlinePlayers()) completions.add(player.getName());
-                }
-                break;
-                default:
-                    return null;
-            }
-
-            return completions;
-        });
-        this.requiredArgs.put("power|reset", context -> {
-            List<String> completions = new ArrayList<>();
-
-            completions.add("reset");
-            String value = context.argAsString(2);
-            try {
-                // Just to check if it can be parsed into a double
-                Double.parseDouble(value);
-                if(!value.contains("."))
-                completions.add(value + ".");
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Double.parseDouble(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){}
-
-            return completions;
-        });
+        this.requiredArgs.add(new ListStringArgumentProvider("type", null, "player","plugin","faction","f"));
+        this.requiredArgs.add(new FPlayerAndFactionArgumentProvider("target", null,
+                (fPlayer, context) -> context.argAsString(0).equalsIgnoreCase("player") || context.argAsString(0).equalsIgnoreCase("plugin"),
+                (faction, context) -> context.argAsString(0).equalsIgnoreCase("faction") || context.argAsString(0).equalsIgnoreCase("f")));
+        this.requiredArgs.add(new CompositeArgumentProvider(new DoubleArgumentProvider("power"), new ListStringArgumentProvider("reset", null, "reset")));
 
         this.requirements = new CommandRequirements.Builder(Permission.POWERBOOST)
                 .build();

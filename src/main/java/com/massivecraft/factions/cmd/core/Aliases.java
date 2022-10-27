@@ -66,7 +66,7 @@ public class Aliases {
     public static ArrayList<String> tnt_tntfill = new ArrayList<>(Collections.singletonList("tntfill"));
     public static ArrayList<String> wild = new ArrayList<>(Collections.singletonList("wild"));
     public static ArrayList<String> admin = new ArrayList<>(Arrays.asList("admin", "setadmin", "leader", "setleader"));
-    public static ArrayList<String> ahome = new ArrayList<>(Collections.singletonList("ahome"));
+    public static ArrayList<String> ahome = new ArrayList<>(Arrays.asList("ahome","sendhome"));
     public static ArrayList<String> announce = new ArrayList<>(Arrays.asList("ann", "announce"));
     public static ArrayList<String> help = new ArrayList<>(Arrays.asList("help", "h", "?"));
     public static ArrayList<String> ban_ban = new ArrayList<>(Collections.singletonList("ban"));

@@ -4,14 +4,12 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.CustomArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CmdSetDefaultRole extends FCommand {
 
@@ -25,17 +23,9 @@ public class CmdSetDefaultRole extends FCommand {
         super();
 
         this.aliases.addAll(Aliases.setDefaultRole);
-        this.requiredArgs.put("role", context -> {
-            List<String> completions = new ArrayList<>();
-            for (Role role: Role.values()) {
-                if(role == Role.LEADER)
-                    continue;
-
-                completions.addAll(Arrays.stream(role.aliases).collect(Collectors.toList()));
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new CustomArgumentProvider<>("role", null,
+                (context, integer) -> Arrays.asList(Role.values()), Role::name,
+                (role, context) -> role != Role.LEADER));
 
         this.requirements = new CommandRequirements.Builder(Permission.DEFAULTRANK)
                 .playerOnly()

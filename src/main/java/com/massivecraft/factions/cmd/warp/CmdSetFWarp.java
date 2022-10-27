@@ -1,4 +1,4 @@
-package com.massivecraft.factions.cmd;
+package com.massivecraft.factions.cmd.warp;
 
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FactionsPlugin;
@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Relation;
 import com.massivecraft.factions.struct.Warp;
@@ -25,15 +26,7 @@ public class CmdSetFWarp extends FCommand {
 
     public CmdSetFWarp() {
         this.aliases.addAll(Aliases.setWarp);
-        this.requiredArgs.put("warp name", context -> {
-            String warp = context.argAsString(0);
-            if(context.faction.isWarp(warp))
-                return null;
-
-            return new ArrayList<String>() {{
-                add("[<warp name>]");
-            }};
-        });
+        this.requiredArgs.add(new SingleWordArgumentProvider("warp name", (warp, context) -> !context.faction.isWarp(warp)));
         this.optionalArgs.put("password", "password");
         this.requirements = new CommandRequirements.Builder(Permission.SETWARP).playerOnly().memberOnly().withAction(PermissableAction.SETWARP).build();
     }

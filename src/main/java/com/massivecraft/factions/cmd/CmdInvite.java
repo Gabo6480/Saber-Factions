@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnlineFPlayerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.fperms.PermissableAction;
@@ -27,18 +28,7 @@ public class CmdInvite extends FCommand {
         super();
         this.aliases.addAll(Aliases.invite);
 
-        this.requiredArgs.put("player", (context) -> {
-            List<String> completions = new ArrayList<>();
-            Faction senderFaction = context.faction;
-            for (FPlayer fPlayer : FPlayers.getInstance().getOnlinePlayers()){
-                if(fPlayer.getFaction().getId().equals(senderFaction.getId()))
-                    continue;
-                if(!senderFaction.isInvited(fPlayer) && !senderFaction.isBanned(fPlayer))
-                    completions.add(fPlayer.getName());
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new OnlineFPlayerArgumentProvider(((fPlayer, context) -> !fPlayer.getFaction().getId().equals(context.faction.getId()) && !context.faction.isInvited(fPlayer) && !context.faction.isBanned(fPlayer))));
 
         this.requirements = new CommandRequirements.Builder(Permission.INVITE)
                 .playerOnly()

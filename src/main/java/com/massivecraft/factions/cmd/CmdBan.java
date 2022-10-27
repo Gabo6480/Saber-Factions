@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.AllFPlayerArgumentProvider;
 import com.massivecraft.factions.event.FPlayerLeaveEvent;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.CC;
@@ -31,20 +32,10 @@ public class CmdBan extends FCommand {
         super();
         this.aliases.addAll(Aliases.ban_ban);
 
-        this.requiredArgs.put("player", context -> {
-            List<String> completions = new ArrayList<>();
-
-            for(FPlayer fPlayer : FPlayers.getInstance().getAllFPlayers()){
-                if(fPlayer == context.fPlayer
-                    || fPlayer.getFaction() == context.faction && fPlayer.getRole().value >= context.fPlayer.getRole().value
-                    || context.faction.isBanned(fPlayer))
-                    continue;
-
-                completions.add(fPlayer.getName());
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new AllFPlayerArgumentProvider(((fPlayer, context) -> !(fPlayer == context.fPlayer
+                || fPlayer.getFaction() == context.faction && fPlayer.getRole().value >= context.fPlayer.getRole().value
+                || context.faction.isBanned(fPlayer))
+        )));
 
         this.requirements = new CommandRequirements.Builder(Permission.BAN)
                 .playerOnly()

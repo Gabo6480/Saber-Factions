@@ -3,6 +3,7 @@ package com.massivecraft.factions.cmd.core;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.FactionsPlugin;
+import com.massivecraft.factions.cmd.core.args.ArgumentProvider;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.util.CC;
 import com.massivecraft.factions.zcore.CommandVisibility;
@@ -30,7 +31,7 @@ public abstract class FCommand {
     public List<String> aliases;
 
     // Information on the args
-    public LinkedHashMap<String, Function<CommandContext, List<String>>> requiredArgs;
+    public LinkedList<ArgumentProvider> requiredArgs;
     public LinkedHashMap<String, String> optionalArgs;
 
     // Requirements to execute this command
@@ -53,7 +54,7 @@ public abstract class FCommand {
         this.subCommands = new ArrayList<>();
         this.aliases = new ArrayList<>();
 
-        this.requiredArgs = new LinkedHashMap<>();
+        this.requiredArgs = new LinkedList<>();
         this.optionalArgs = new LinkedHashMap<>();
 
         this.helpShort = null;
@@ -128,13 +129,13 @@ public abstract class FCommand {
             // If there are no exactly matching subcommands, then we start processing the requiredArgs
             if(argCount <= requiredArgs.size()){
                 if(context.argAsString(currentArgIndex).isEmpty()){
-                    String reqArgName = new ArrayList<>(requiredArgs.keySet()).get(currentArgIndex);
+                    String reqArgName = requiredArgs.get(currentArgIndex).getName();
 
                     if(reqArgName != null)
                         completions.add("<" + reqArgName + ">");
                 }
 
-                List<String> result = new ArrayList<>(requiredArgs.values()).get(currentArgIndex).apply(context);
+                List<String> result = requiredArgs.get(currentArgIndex).getCompletions(context, currentArgIndex);
                 if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
             }
         }
@@ -281,8 +282,8 @@ public abstract class FCommand {
 
         List<String> args = new ArrayList<>();
 
-        for (String requiredArg : this.requiredArgs.keySet()) {
-            args.add("<" + requiredArg + ">");
+        for (ArgumentProvider requiredArg : this.requiredArgs) {
+            args.add("<" + requiredArg.getName() + ">");
         }
 
         for (Map.Entry<String, String> optionalArg : this.optionalArgs.entrySet()) {

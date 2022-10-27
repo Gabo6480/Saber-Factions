@@ -7,6 +7,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.AllFPlayerArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -23,10 +25,8 @@ public class CmdReserve extends FCommand {
 
     public CmdReserve() {
         this.aliases.addAll(Aliases.reserve);
-        this.requiredArgs.put("faction tag" ,context -> new ArrayList<String>(){{
-            add("[<faction tag>]");
-        }});
-        this.requiredArgs.put("player", context -> FPlayers.getInstance().getAllFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
+        this.requiredArgs.add(new SingleWordArgumentProvider("faction tag"));
+        this.requiredArgs.add(new AllFPlayerArgumentProvider());
         this.requirements = new CommandRequirements.Builder(
                 Permission.RESERVE).build();
     }

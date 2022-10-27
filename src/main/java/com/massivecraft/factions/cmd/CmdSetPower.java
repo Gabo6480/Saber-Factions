@@ -1,18 +1,15 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.FactionsPlugin;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.OnlinePlayerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Factions - Developed by Driftay.
@@ -27,30 +24,13 @@ public class CmdSetPower extends FCommand {
 
     public CmdSetPower() {
         this.aliases.addAll(Aliases.setPower);
-        this.requiredArgs.put("player", context -> FPlayers.getInstance().getOnlinePlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
-        this.requiredArgs.put("power", context -> {
-            List<String> completions = new ArrayList<>();
+        this.requiredArgs.add(new OnlinePlayerArgumentProvider());
+        this.requiredArgs.add(new IntegerArgumentProvider("power", (integer, context) ->  {
             FPlayer targetPlayer = context.argAsFPlayer(0);
             if(targetPlayer == null)
-                return null;
-            String value = context.argAsString(1);
-            int maxPower = targetPlayer.getPowerMaxRounded();
-            try {
-
-                if(Integer.parseInt(value) <= maxPower)
-                    for (int i = 0; i < 10; i++) {
-                        String completeInt = value + i;
-                        // Just to check if it can be parsed into a double
-                        if(Integer.parseInt(completeInt) <= maxPower)
-                            completions.add(completeInt);
-                    }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-            return completions;
-        });
+                return false;
+            return integer <= targetPlayer.getPowerMaxRounded();
+        }));
 
         this.requirements = new CommandRequirements.Builder(Permission.SETPOWER)
                 .build();

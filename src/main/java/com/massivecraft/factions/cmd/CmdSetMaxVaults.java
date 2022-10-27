@@ -1,17 +1,14 @@
 package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CmdSetMaxVaults extends FCommand {
 
@@ -23,31 +20,9 @@ public class CmdSetMaxVaults extends FCommand {
 
     public CmdSetMaxVaults() {
         this.aliases.addAll(Aliases.setMaxVaults);
-        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
-        this.requiredArgs.put("amount", context -> {
-            List<String> completions = new ArrayList<>();
-            Faction faction = context.argAsFaction(0);
-            if(faction == null)
-                return null;
-
-            String value = context.argAsString(1);
-            try {
-                if(Integer.parseInt(value) < 0)
-                    return null;
-
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Integer.parseInt(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-            return completions;
-        });
+        this.requiredArgs.add(new FactionTagArgumentProvider());
+        this.requiredArgs.add(new IntegerArgumentProvider("amount",
+                (numb, context) -> context.argAsFaction(0) != null && numb >= 0));
 
         this.requirements = new CommandRequirements.Builder(Permission.SETMAXVAULTS)
                 .build();

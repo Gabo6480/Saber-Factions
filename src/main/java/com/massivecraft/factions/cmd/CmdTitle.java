@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionMemberArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
 import com.massivecraft.factions.zcore.util.TL;
@@ -23,7 +24,7 @@ public class CmdTitle extends FCommand {
 
     public CmdTitle() {
         this.aliases.addAll(Aliases.title);
-        this.requiredArgs.put("player", context -> context.faction.getFPlayers().stream().map(FPlayer::getName).collect(Collectors.toList()));
+        this.requiredArgs.add(new FactionMemberArgumentProvider());
         this.optionalArgs.put("title", "");
 
         this.requirements = new CommandRequirements.Builder(Permission.TITLE)

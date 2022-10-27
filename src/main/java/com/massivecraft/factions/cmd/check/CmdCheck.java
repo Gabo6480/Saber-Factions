@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.ListStringArgumentProvider;
 import com.massivecraft.factions.discord.Discord;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
@@ -35,12 +36,12 @@ public class CmdCheck extends FCommand {
     public CmdCheck() {
         this.simpleDateFormat = new SimpleDateFormat(Conf.dateFormat);
         this.aliases.addAll(Aliases.check);
-        this.requiredArgs.put("option", context -> new ArrayList<String>(){{
-            add("walls");
-            add("buffers");
-            add("settings");
-            add("leaderboard");
-        }});
+        this.requiredArgs.add(new ListStringArgumentProvider("option", null,
+                "walls",
+                "buffers",
+                "settings",
+                "leaderboard"
+        ));
 
         this.requirements = new CommandRequirements.Builder(Permission.CHECK)
                 .playerOnly()

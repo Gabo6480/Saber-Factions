@@ -5,6 +5,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.event.FPlayerJoinEvent;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.util.Logger;
@@ -24,20 +25,8 @@ public class CmdJoin extends FCommand {
     public CmdJoin() {
         super();
         this.aliases.addAll(Aliases.join);
-        this.requiredArgs.put("faction", context -> {
-            List<String> completions = new ArrayList<>();
-            for (Faction faction : Factions.getInstance().getAllFactions()){
-
-                if(!faction.isNormal() || faction == context.faction
-                        || !(faction.getOpen() || faction.isInvited(context.fPlayer) || context.fPlayer.isAdminBypassing() || Permission.JOIN_ANY.has(context.sender, false)))
-                    continue;
-
-
-                completions.add(faction.getTag());
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new FactionTagArgumentProvider(((faction, context) -> faction.isNormal() && !faction.getId().equals(context.faction.getId())
+                || faction.getOpen() || faction.isInvited(context.fPlayer) || context.fPlayer.isAdminBypassing() || Permission.JOIN_ANY.has(context.sender, false))));
         this.optionalArgs.put("player", "you");
 
         this.requirements = new CommandRequirements.Builder(Permission.JOIN)

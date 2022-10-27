@@ -2,6 +2,7 @@ package com.massivecraft.factions.cmd;
 
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.cmd.core.*;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -25,7 +26,8 @@ public class CmdAnnounce extends FCommand {
         super();
         this.aliases.addAll(Aliases.announce);
 
-        this.requiredArgs.put("message", context -> new ArrayList<String>(){{add("[<message>]");}});
+        // TODO: Create an ArgumentProvider that works for strings with spaces
+        this.requiredArgs.add(new SingleWordArgumentProvider("message"));
 
         this.requirements = new CommandRequirements.Builder(Permission.ANNOUNCE)
                 .playerOnly()

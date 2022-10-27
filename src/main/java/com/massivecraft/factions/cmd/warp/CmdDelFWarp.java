@@ -1,4 +1,4 @@
-package com.massivecraft.factions.cmd;
+package com.massivecraft.factions.cmd.warp;
 
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FactionsPlugin;
@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionWarpArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -22,7 +23,7 @@ public class CmdDelFWarp extends FCommand {
     public CmdDelFWarp() {
         super();
         this.aliases.addAll(Aliases.deletefwarp);
-        this.requiredArgs.put("warp", context -> Collections.list(context.faction.getWarps().keys()));
+        this.requiredArgs.add(new FactionWarpArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.SETWARP)
                 .playerOnly()

@@ -4,11 +4,9 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.number.IntegerArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Deprecated
 public class CmdKillHolograms extends FCommand {
@@ -22,26 +20,7 @@ public class CmdKillHolograms extends FCommand {
     public CmdKillHolograms() {
         super();
         this.aliases.addAll(Aliases.killholograms);
-        this.requiredArgs.put("radius", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(0);
-            try {
-                // Just to check if it can be parsed into a double
-                Integer.parseInt(value);
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Integer.parseInt(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-
-            return completions;
-        });
+        this.requiredArgs.add(new IntegerArgumentProvider("radius", (numb, context) -> numb >= 0));
 
         this.requirements = new CommandRequirements.Builder(Permission.KILLHOLOS)
                 .playerOnly()

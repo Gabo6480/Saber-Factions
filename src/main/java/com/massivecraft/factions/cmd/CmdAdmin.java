@@ -9,6 +9,8 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.OnlineFPlayerArgumentProvider;
+import com.massivecraft.factions.cmd.core.args.OnlinePlayerArgumentProvider;
 import com.massivecraft.factions.event.FPlayerJoinEvent;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.struct.Role;
@@ -32,12 +34,15 @@ public class CmdAdmin extends FCommand {
         super();
         this.aliases.addAll(Aliases.admin);
 
-        this.requiredArgs.put("player",
-                (context) -> {
-                    List<String> completions = new ArrayList<>();
-                    for (Player player : Bukkit.getServer().getOnlinePlayers()) completions.add(player.getName());
-                    return  completions;
-                });
+        this.requiredArgs.add(new OnlineFPlayerArgumentProvider((fp, context) -> {
+            if(fp.isAlt())
+                return false;
+
+            if(Permission.ADMIN_ANY.has(context.sender, false))
+                return true;
+
+            return context.faction.getId().equals(fp.getFaction().getId());
+        }));
 
         this.requirements = new CommandRequirements.Builder(Permission.ADMIN)
                 .playerOnly()

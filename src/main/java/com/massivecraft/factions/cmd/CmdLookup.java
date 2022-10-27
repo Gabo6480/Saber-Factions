@@ -8,6 +8,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.FactionTagArgumentProvider;
 import com.massivecraft.factions.struct.Permission;
 import com.massivecraft.factions.zcore.util.TL;
 
@@ -25,7 +26,7 @@ public class CmdLookup extends FCommand {
     public CmdLookup() {
         super();
         this.aliases.addAll(Aliases.lookup);
-        this.requiredArgs.put("faction", context -> Factions.getInstance().getAllFactions().stream().map(Faction::getTag).collect(Collectors.toList()));
+        this.requiredArgs.add(new FactionTagArgumentProvider());
 
         this.requirements = new CommandRequirements.Builder(Permission.LOOKUP)
                 .playerOnly()

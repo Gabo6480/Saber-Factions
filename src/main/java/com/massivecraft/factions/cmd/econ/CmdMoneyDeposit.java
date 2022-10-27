@@ -7,6 +7,7 @@ import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
 import com.massivecraft.factions.cmd.audit.FLogType;
+import com.massivecraft.factions.cmd.core.args.number.DoubleArgumentProvider;
 import com.massivecraft.factions.iface.EconomyParticipator;
 import com.massivecraft.factions.integration.Econ;
 import com.massivecraft.factions.struct.Permission;
@@ -30,27 +31,7 @@ public class CmdMoneyDeposit extends FCommand {
         super();
         this.aliases.addAll(Aliases.money_deposit);
 
-        this.requiredArgs.put("amount", context -> {
-            List<String> completions = new ArrayList<>();
-            String value = context.argAsString(0);
-            try{
-                // Just to check if it can be parsed into a double
-                Double.parseDouble(value);
-                if(!value.contains("."))
-                completions.add(value + ".");
-                for (int i = 0; i < 10; i++) {
-                    String completeInt = value + i;
-                    // Just to check if it can be parsed into a double
-                    Double.parseDouble(completeInt);
-                    completions.add(completeInt);
-                }
-            }
-            catch (Exception ignored){
-                if(completions.isEmpty())
-                    return null;
-            }
-            return completions;
-        });
+        this.requiredArgs.add(new DoubleArgumentProvider("amount", (number, context) -> number > 0));
 
         this.optionalArgs.put("faction", "yours");
 

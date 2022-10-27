@@ -6,6 +6,7 @@ import com.massivecraft.factions.cmd.core.Aliases;
 import com.massivecraft.factions.cmd.core.CommandContext;
 import com.massivecraft.factions.cmd.core.CommandRequirements;
 import com.massivecraft.factions.cmd.core.FCommand;
+import com.massivecraft.factions.cmd.core.args.SingleWordArgumentProvider;
 import com.massivecraft.factions.discord.Discord;
 import com.massivecraft.factions.event.FactionRenameEvent;
 import com.massivecraft.factions.scoreboards.FTeamWrapper;
@@ -29,13 +30,7 @@ public class CmdTag extends FCommand {
     public CmdTag() {
         this.aliases.addAll(Aliases.tag);
 
-        this.requiredArgs.put("faction tag", context -> {
-            String tag = context.argAsString(0);
-            if (Factions.getInstance().isTagTaken(tag) || !MiscUtil.validateTag(tag).isEmpty() && tag.length() >= Conf.factionTagLengthMin)
-                return null;
-
-            return new ArrayList<String>(){{add("[<faction tag>]");}};
-        });
+        this.requiredArgs.add(new SingleWordArgumentProvider("faction tag", (tag, context) -> !(Factions.getInstance().isTagTaken(tag) || !MiscUtil.validateTag(tag).isEmpty() && tag.length() >= Conf.factionTagLengthMin)));
 
         this.requirements = new CommandRequirements.Builder(Permission.TAG)
                 .withRole(Role.COLEADER)
