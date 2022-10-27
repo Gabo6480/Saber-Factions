@@ -33,7 +33,6 @@ public class CmdChat extends FCommand {
         this.requirements = new CommandRequirements.Builder(Permission.CHAT)
                 .playerOnly()
                 .memberOnly()
-                .brigadier(ChatBrigadier.class)
                 .build();
     }
 
@@ -95,15 +94,5 @@ public class CmdChat extends FCommand {
         return TL.COMMAND_CHAT_DESCRIPTION;
     }
 
-    protected class ChatBrigadier implements BrigadierProvider {
-        @Override
-        public ArgumentBuilder<Object, ?> get(ArgumentBuilder<Object, ?> parent) {
-            return parent.then(LiteralArgumentBuilder.literal("public"))
-                    .then(LiteralArgumentBuilder.literal("mod"))
-                    .then(LiteralArgumentBuilder.literal("alliance"))
-                    .then(LiteralArgumentBuilder.literal("faction"))
-                    .then(LiteralArgumentBuilder.literal("truce"));
-        }
-    }
 
 }

@@ -49,7 +49,6 @@ public class FCmdRoot extends FCommand implements TabExecutor {
      */
 
     public static FCmdRoot instance;
-    //public BrigadierManager brigadierManager;
     public CmdAdmin cmdAdmin = new CmdAdmin();
     public CmdAutoClaim cmdAutoClaim = new CmdAutoClaim();
     public CmdBoom cmdBoom = new CmdBoom();

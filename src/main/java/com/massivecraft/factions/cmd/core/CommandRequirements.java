@@ -27,20 +27,17 @@ public class CommandRequirements {
     // PermissableAction check if the player has allow for this before checking the role
     public PermissableAction action;
 
-    // Commodore stuffs
-    public Class<? extends BrigadierProvider> brigadier;
 
     // Edge case handling
     public boolean errorOnManyArgs;
     public boolean disableOnLock;
 
-    private CommandRequirements(Permission permission, boolean playerOnly, boolean memberOnly, Role role, PermissableAction action, Class<? extends BrigadierProvider> brigadier) {
+    private CommandRequirements(Permission permission, boolean playerOnly, boolean memberOnly, Role role, PermissableAction action) {
         this.permission = permission;
         this.playerOnly = playerOnly;
         this.memberOnly = memberOnly;
         this.role = role;
         this.action = action;
-        this.brigadier = brigadier;
     }
 
     public boolean computeRequirements(CommandContext context, boolean informIfNot) {
@@ -105,8 +102,6 @@ public class CommandRequirements {
         private Role role = null;
         private PermissableAction action;
 
-        private Class<? extends BrigadierProvider> brigadier;
-
         private boolean errorOnManyArgs = true;
         private boolean disableOnLock = true;
 
@@ -135,13 +130,8 @@ public class CommandRequirements {
             return this;
         }
 
-        public Builder brigadier(Class<? extends BrigadierProvider> brigadier) {
-            this.brigadier = brigadier;
-            return this;
-        }
-
         public CommandRequirements build() {
-            CommandRequirements requirements = new CommandRequirements(permission, playerOnly, memberOnly, role, action, brigadier);
+            CommandRequirements requirements = new CommandRequirements(permission, playerOnly, memberOnly, role, action);
             requirements.errorOnManyArgs = errorOnManyArgs;
             requirements.disableOnLock = disableOnLock;
             return requirements;
