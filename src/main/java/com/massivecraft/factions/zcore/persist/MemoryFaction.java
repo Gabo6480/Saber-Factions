@@ -259,11 +259,10 @@ public abstract class MemoryFaction implements Faction, EconomyParticipator {
     }
 
     public Warp getWarp(String name) {
-        return this.warps.get(name.toLowerCase());
+        return this.warps.get(name);
     }
 
     public Warp setWarp(String name, Location loc) {
-        name = name.toLowerCase();
         Warp newWarp = new Warp(name, loc, this);
         this.warps.put(name, newWarp);
 

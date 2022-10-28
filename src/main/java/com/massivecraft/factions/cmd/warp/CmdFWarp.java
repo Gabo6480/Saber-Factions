@@ -53,6 +53,7 @@ public class CmdFWarp extends FCommand {
 
                 Warp warp = context.faction.getWarp(warpName);
 
+
                 // Check if requires password and if so, check if valid. CASE SENSITIVE
                 if (warp.hasPassword() && !warp.isPassword(passwordAttempt)) {
                     context.faction.msg(TL.COMMAND_FWARP_INVALID_PASSWORD);
