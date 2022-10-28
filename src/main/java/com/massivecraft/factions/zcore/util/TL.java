@@ -1098,6 +1098,7 @@ public enum TL {
     COMMAND_WILD_INTERUPTED("&c&l[!] &7Teleport cancelled!"),
     COMMAND_WILD_FAILED("&c&l[!] &7Could not find a location to teleport you to!"),
     COMMAND_WILD_INPROGRESS("&c&l[!] &7You are already teleporting somewhere!"),
+    COMMAND_WILD_WORLD_NOT_ALLOWED("&c&l[!] &7You can't use &e/f wild &7in this world!"),
 
     COMMAND_RULES_DISABLED_MSG("&cThis command is disabled!"),
     COMMAND_RULES_DESCRIPTION("set/remove/add rules!"),
