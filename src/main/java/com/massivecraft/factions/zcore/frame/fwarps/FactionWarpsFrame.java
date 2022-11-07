@@ -106,7 +106,7 @@ public class FactionWarpsFrame {
             Player player = Bukkit.getPlayer(fme.getPlayer().getUniqueId());
             if (player != null) {
                 player.teleport(warp.getLocation());
-                fme.msg(TL.COMMAND_FWARP_WARPED, warp);
+                fme.msg(TL.COMMAND_FWARP_WARPED, warp.getName());
             }
         }, FactionsPlugin.getInstance().getConfig().getLong("warmups.f-warp", 10));
     }
