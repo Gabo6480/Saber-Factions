@@ -139,9 +139,10 @@ public abstract class FCommand {
                 if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
             }
             else if(argCount <= requiredArgs.size() + optionalArgs.size()){
+                int optionalArgumentIndex = currentArgIndex - requiredArgs.size();
                 if(context.argAsString(currentArgIndex).isEmpty()){
-                    String optionalArgName = optionalArgs.get(currentArgIndex).getName();
-                    String optionalArgDefault = optionalArgs.get(currentArgIndex).getDefaultValue();
+                    String optionalArgName = optionalArgs.get(optionalArgumentIndex).getName();
+                    String optionalArgDefault = optionalArgs.get(optionalArgumentIndex).getDefaultValue();
 
                     if(optionalArgDefault != null)
                         optionalArgName += "=" + optionalArgDefault;
@@ -149,7 +150,7 @@ public abstract class FCommand {
                     completions.add("[" + optionalArgName + "]");
                 }
 
-                List<String> result = optionalArgs.get(currentArgIndex).getCompletions(context, currentArgIndex);
+                List<String> result = optionalArgs.get(optionalArgumentIndex).getCompletions(context, currentArgIndex);
                 if(result != null) completions.addAll(result.stream().map(ChatColor::stripColor).collect(Collectors.toList()));
             }
         }
