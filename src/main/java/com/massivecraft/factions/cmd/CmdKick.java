@@ -79,7 +79,7 @@ public class CmdKick extends FCommand {
             return;
         }
 
-        if (toKick.hasFaction()) {
+        if (!toKick.hasFaction()) {
             context.sender.sendMessage(TL.COMMAND_KICK_NONE.toString());
             return;
         }
@@ -138,6 +138,7 @@ public class CmdKick extends FCommand {
         }
         FactionsPlugin.instance.logFactionEvent(toKickFaction, FLogType.INVITES, context.fPlayer.getName(), CC.Red + "kicked", toKick.getName());
         toKickFaction.deinvite(toKick);
+        toKickFaction.removeFPlayer(toKick);
         toKick.resetFactionData();
     }
 
